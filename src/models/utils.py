@@ -22,7 +22,7 @@ class Embedding(nn.Module):
 
 	def forward(self,x):
 		length = x.shape[1]
-		return x + self.possition_embedding(torch.arange(0,length))
+		return x + self.possition_embedding(torch.arange(0,length,device  = x.device))
 def get_mlp_head(infeatures,outfeatuers,activation = 'GELU',dropout = 0.1):
 	return nn.Sequential(
 		nn.Linear(infeatures,infeatures*2),

@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
 from attention import MultiHeadAttention
-from utils import FeedForward,ImageTokenizer,get_mlp_head
+from utils import FeedForward,ImageTokenizer,get_mlp_head,Embedding
 
 
 
@@ -30,7 +30,7 @@ class ViTransformers(nn.Module):
 		self.encoder = nn.ModuleList([Encoder(config) for _ in range(self.config['num_layers'])])
 		self.image_tokenizer = ImageTokenizer(config)
 		self.mlp_head = get_mlp_head(self.config['d_model'],self.config['num_classes'])
-		
+
 	def forward(self,x):
 		batch_size = x.shape[0]
 

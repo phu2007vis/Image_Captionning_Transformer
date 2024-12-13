@@ -13,3 +13,17 @@ model:
   patch_size: 16
   image_size: 224
   num_classes: 10
+
+dataset:
+  'train':
+    name: 'MNIST'
+    phase: 'train'
+    image_size: 224
+    loader_config: 
+      batch_size: 64
+  'val':
+    name: 'MNIST'
+    phase: 'test'
+    image_size: 224
+    loader_config: 
+      batch_size: 64

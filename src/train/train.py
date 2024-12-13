@@ -14,7 +14,7 @@ from models.utils import load_config
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--config',default=r'src\configs\config.yaml')
+	parser.add_argument('--config',default=r'C:\Users\9999\phuoc\transformer\src\configs\config.yaml')
 	
 	args = parser.parse_args()
 	config = load_config(args.config)

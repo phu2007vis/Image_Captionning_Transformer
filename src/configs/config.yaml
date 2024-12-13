@@ -1,0 +1,15 @@
+
+
+
+model:
+  d_model: 512
+  max_length: 1024
+  activation: GELU
+  d_hidden: 1024
+  drop_prob: 0.15
+  n_head: 8
+  dropout: 0.1
+  num_layers: 5
+  patch_size: 16
+  image_size: 224
+  num_classes: 10

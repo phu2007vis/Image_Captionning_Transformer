@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 file_path = os.path.abspath(__file__)
 dir_file = os.path.dirname(file_path)
 dir_name = os.path.basename(dir_file)
+
 # Dictionary to register datasets
 dataset_register = {}
 
@@ -29,10 +30,11 @@ for dataset_name in os.listdir(dir_file):
         else:
             print(f"Attribute '{map_name}' not found in module '{module_name}'")
 
-def get_dataset(dataset_name):
-	return dataset_register[dataset_name]
+def get_dataset(dataset_config):
+    dataset_name = dataset_config.get('name')
+    return dataset_register[dataset_name](dataset_config)
 def get_dataloader(dataset_config):
-     dataset_name = dataset_config.get('name')
-     dataset = get_dataset(dataset_name)
+    
+     dataset = get_dataset(dataset_config)
      loader_config =dataset_config.get('loader_config')
      return DataLoader(dataset,**loader_config)

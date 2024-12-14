@@ -18,7 +18,7 @@ dataset:
   'train':
     name: 'MNIST'
     phase: 'train'
-    image_size: 224
+    image_size: 80
     loader_config: 
       batch_size: 64
   'val':
@@ -27,3 +27,12 @@ dataset:
     image_size: 224
     loader_config: 
       batch_size: 64
+      shuffle: true
+optim:
+  lr: 0.0001
+train: 
+  print_frequency: 100
+  epochs: 10
+
+evaluate:
+  frequency: 1000

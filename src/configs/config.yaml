@@ -2,6 +2,7 @@
 device: 'cuda'
 
 model:
+  model_name: 'TrainsformersClassifier'
   d_model: 512
   max_length: 1024
   activation: GELU
@@ -20,19 +21,27 @@ dataset:
     phase: 'train'
     image_size: 80
     loader_config: 
-      batch_size: 64
+      batch_size: 128
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
   'val':
     name: 'MNIST'
     phase: 'test'
-    image_size: 224
+    image_size: 80
     loader_config: 
       batch_size: 64
       shuffle: true
+      drop_last: true
+
 optim:
   lr: 0.0001
 train: 
   print_frequency: 100
   epochs: 10
+  save_folder: results
 
 evaluate:
-  frequency: 1000
+  frequency: 100
+  metrics:
+    - accuracy_classification

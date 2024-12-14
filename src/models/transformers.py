@@ -33,7 +33,11 @@ class ViTransformers(nn.Module):
 		self.mlp_head = get_mlp_head(self.config['d_model'],self.config['num_classes'])
 		self.to(config.get('device'))
 		self.device = config.get('device')
-		
+	def get_init_best_loss(self):
+		return 9999
+	def compare_best_loss(self,current_loss,best_loss):
+		return current_loss < best_loss
+	
 	def setup_optimizer(self):
 		optim_config = self.all_config['optim']
 		self.optimizer = Adam(self.parameters(),**optim_config)
@@ -43,8 +47,17 @@ class ViTransformers(nn.Module):
 		x, labels =  data
 		self.x = x.to(self.device)
 		self.labels = labels.to(self.device)
-		self.labels= nn.functional.one_hot(self.labels % self.config.get('num_classes')).float()
-	
+		# self.label_temp = self.labels.clone()
+		self.labels= nn.functional.one_hot(self.labels ,self.config.get('num_classes')).float()
+	def get_output(self):
+		
+		outputs = self.outputs.detach().clone().cpu()
+		values,indices = outputs.max(1)
+		return indices.numpy()
+	def get_label(self):
+		labels = self.labels.detach().clone().cpu()
+		values , indices = labels.max(1)
+		return indices.numpy()
 	def get_loss(self):
 		return self.losses.detach().clone().cpu().item()
 
@@ -87,9 +100,12 @@ class ViTransformers(nn.Module):
 	def phuoc_optimizer_step(self):
 		self.losses.backward()
 		self.optimizer.step()
-	def phuoc_optimize(self):
-		
+	def do_loss(self):
 		self.losses = self.loss_fn(self.outputs,self.labels)
+		
+	def phuoc_optimize(self):
+
+		self.do_loss()
 		self.clear_gradient()
 		self.phuoc_optimizer_step()
 		

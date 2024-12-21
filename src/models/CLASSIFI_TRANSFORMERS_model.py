@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch
-from attention import MultiHeadAttention
-from utils import FeedForward,ImageTokenizer,get_mlp_head,Embedding
+from models.attention import MultiHeadAttention
+from models.transformers_ultis import FeedForward,ImageTokenizer,get_mlp_head,Embedding
 from torch.optim import Adam
 
 
@@ -21,7 +21,7 @@ class Encoder(nn.Module):
 		return self.norm2(ffc_x+norm1_x)
 
 
-class ViTransformers(nn.Module):
+class CLASSIFI_TRANSFORMERS(nn.Module):
 	def __init__(self,config):
 		super().__init__()
 		self.all_config = config
@@ -44,6 +44,7 @@ class ViTransformers(nn.Module):
 	def setup_loss_fn(self):
 		self.loss_fn = nn.CrossEntropyLoss()
 	def fetch_data(self,data):
+        
 		x, labels =  data
 		self.x = x.to(self.device)
 		self.labels = labels.to(self.device)

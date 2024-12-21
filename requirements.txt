@@ -1,0 +1,4 @@
+pyvi
+git+https://github.com/CodeLinkIO/vietnam-number.git@master
+git+https://github.com/CodeLinkIO/Vietnamese-text-normalization.git@main
+kagglehub

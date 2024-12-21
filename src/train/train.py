@@ -8,14 +8,14 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # Absolute imports based on the package hierarchy
 from trainer import Trainer
-from models.utils import load_config
+from utils import load_config
 
 
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--config',default=r'C:\Users\9999\phuoc\transformer\src\configs\config.yaml')
-	
+	# parser.add_argument('--config',default=r'./src/configs/config.yaml')
+	parser.add_argument('--config',default=r'/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/image_captioning.yaml')
 	args = parser.parse_args()
 	config = load_config(args.config)
 	trainer = Trainer(config)

@@ -6,6 +6,7 @@ from torchvision import transforms ,datasets
 class MNIST(Dataset):
 	def __init__(self,config):
 		self.config = config
+		self.collate_fn = None
 		assert config['phase'] in ['train', 'test'] , f"MNIST Not support this phase: {config['phase']}! train or test !"
 		train = True if config['phase'] == 'train' else False
 		self.image_size = int(config['image_size'])

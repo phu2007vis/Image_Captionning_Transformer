@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from utils import FeedForward
+from models.transformers_ultis import FeedForward
 import math
 
 class ScaleDotProductAttention(nn.Module):

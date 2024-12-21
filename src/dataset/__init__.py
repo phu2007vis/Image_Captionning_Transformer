@@ -10,6 +10,7 @@ dir_name = os.path.basename(dir_file)
 dataset_register = {}
 
 for dataset_name in os.listdir(dir_file):
+  
     if dataset_name.endswith('_dataset.py'):
         # Remove the file extension to get the module name
         module_name = dataset_name.replace('.py', '')
@@ -37,4 +38,4 @@ def get_dataloader(dataset_config):
     
      dataset = get_dataset(dataset_config)
      loader_config =dataset_config.get('loader_config')
-     return DataLoader(dataset,**loader_config)
+     return DataLoader(dataset,collate_fn=dataset.collate_fn,**loader_config)

@@ -1,0 +1,82 @@
+
+device: 'cuda'
+
+model:
+  model_name: 'VIETOCR'
+
+  hidden_dim: 256
+
+
+  transformers:
+    d_model: 256
+    nhead: 8
+    num_encoder_layers: 6
+    num_decoder_layers: 6
+    dim_feedforward: 1024
+    max_seq_length: 4028
+    pos_dropout: 0.1
+    vocab_size: 35
+    trans_dropout: 0.1
+
+  backbone: vgg19_bn
+  cnn:
+    pretrained: True
+    # pooling stride size
+    ss:
+        - [2, 2]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]         
+    # pooling kernel size 
+    ks:
+        - [2, 2]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]
+    # dim of ouput feature map
+    hidden: 256
+    
+  pretrained: ''
+
+
+dataset:
+  'train':
+    name: 'PLATEOCR'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/OCR_Phuoc/train'
+    masked_language_model: True
+    image_height: 224
+    image_min_width: 120
+    image_max_width: 448
+    vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0-"
+    loader_config: 
+      batch_size: 32
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+  'val':
+    name: 'PLATEOCR'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/OCR_Phuoc/val'
+    masked_language_model: False
+    image_height: 224
+    image_min_width: 120
+    image_max_width: 448
+    vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0-"
+    loader_config: 
+      batch_size: 32
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+
+optim:
+  lr: 0.0002
+train: 
+  print_frequency: 10
+  epochs: 100
+  save_folder: results
+
+evaluate:
+  frequency: 50
+  metrics:
+    - accuracy_classification

@@ -9,27 +9,34 @@ from torch.optim import Adam
 class Encoder(nn.Module):
 	def __init__(self,config):
 		super().__init__()
-		self.config = config['model']
-		self.multi_attention = MultiHeadAttention(config)
+		self.config = config
+  
+		self.multi_attention = MultiHeadAttention(self.config)
 		self.norm1 = nn.LayerNorm(self.config['d_model'])
-		self.ffc = FeedForward(config)
+		self.ffc = FeedForward(self.config)
 		self.norm2 = nn.LayerNorm(self.config['d_model'])
 		self.dropout = nn.Dropout(self.config['dropout'])
+  
 	def forward(self,x):
 		attetion_x = self.multi_attention(x,x,x)
 		norm1_x = self.norm1(attetion_x + x)
 		ffc_x = self.ffc(norm1_x)
 		return self.norm2(ffc_x+norm1_x)
 
-
+class Decoder(nn.Module):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+	def forward(self,x):
+         return x
+  
 class CAPTIONING_TRANSFORMERS(nn.Module):
 	def __init__(self,config):
 		super().__init__()
 		self.all_config = config
 		self.config = config['model']
 		# self.classifier_token = nn.Parameter(torch.randn(1,self.config['d_model']))
-		self.embbeding = Embedding(config)
-		self.encoder = nn.ModuleList([Encoder(config) for _ in range(self.config['num_layers'])])
+		self.embbeding = Embedding(self.config)
+		self.encoder = nn.ModuleList([Encoder(self.config['encode']) for _ in range(self.config['encode']['num_layers'])])
 		self.image_tokenizer = ImageTokenizer(config)
 		self.mlp_head = get_mlp_head(self.config['d_model'],self.config['num_classes'])
 		self.to(config.get('device'))

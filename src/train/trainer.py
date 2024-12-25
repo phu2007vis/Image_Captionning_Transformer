@@ -12,18 +12,21 @@ import torch
 
 class Trainer(object):
     def __init__(self, config):
+        
         self.config = config
         self.model = get_model(config)
         print(f"Device: {self.config['device']}")
+        
         self.load_pretrained_model()
         
         self.save_path = self.config.get('save_folder')
+        
         self.setup_dataset()
         self.train()
     
     def setup_dataset(self):
+        
         dataset_config = self.config.get('dataset')
-        #init dataset skateholder
         self.dataloader_register = {}
 
         for phase in dataset_config.keys():
@@ -31,19 +34,21 @@ class Trainer(object):
             phase_config = dataset_config[phase]  
             self.dataloader_register[phase] = get_dataloader(phase_config)
         
-            # for _ in tqdm(self.dataloader_register[phase], desc=f'Testing {phase} dataset'):
-            #     pass
                 
     def train_one_epoch(self):
+        
         self.model.train()
         self.pbar = tqdm(enumerate(self.dataloader_register['train']), total=len(self.dataloader_register['train']))
+        
         for i, data in self.pbar:
            
             self.model.fetch_data(data)
+         
             self.model.phuoc_forward()
             self.model.phuoc_optimize()
+        
             loss = self.model.get_loss()
-            # print(self.model.losses)
+         
             self.train_iter += 1
             if self.train_iter % self.config['train']['print_frequency'] == 0:
                 self.pbar.set_description(f"Epoch {self.epoch + 1}/{self.config['train']['epochs']}, iter {self.train_iter}, Train loss: {loss}")

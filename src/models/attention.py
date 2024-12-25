@@ -25,6 +25,8 @@ class ScaleDotProductAttention(nn.Module):
         k_t = k.transpose(2, 3)  # transpose
         score = (q @ k_t) / math.sqrt(d_tensor)  # scaled dot product
 
+        if mask is not None:
+            score = score.masked_fill(mask == 0, -float('inf'))
         # 3. pass them softmax to make [0, 1] range
         score = self.softmax(score)
 
@@ -37,7 +39,7 @@ class MultiHeadAttention(nn.Module):
 
     def __init__(self, config):
         super(MultiHeadAttention, self).__init__()
-        self.config = config['model']
+        self.config = config
         self.n_head = self.config.get('n_head')
         d_model = self.config.get('d_model')
         self.attention = ScaleDotProductAttention()
@@ -46,7 +48,7 @@ class MultiHeadAttention(nn.Module):
         self.w_v = nn.Linear(d_model, d_model)
         self.w_concat = nn.Linear(d_model, d_model)
 
-    def forward(self, q, k, v):
+    def forward(self, q, k, v,mask = None):
         # 1. dot product with weight matrices
         q, k, v = self.w_q(q), self.w_k(k), self.w_v(v)
 
@@ -54,7 +56,7 @@ class MultiHeadAttention(nn.Module):
         q, k, v = self.split(q), self.split(k), self.split(v)
 
         # 3. do scale dot product to compute similarity
-        out, _ = self.attention(q, k, v)
+        out, _ = self.attention(q, k, v,mask = mask)
         
         # 4. concat and pass to linear layer
         out = self.concat(out)

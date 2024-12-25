@@ -1,19 +1,30 @@
 
-device: 'cuda'
+device: 'cpu'
 
 model:
   model_name: 'CAPTIONING_TRANSFORMERS'
+
+  encode:
+    d_model: 512
+    activation: GELU
+    d_hidden: 1024
+    drop_prob: 0.15
+    n_head: 8
+    dropout: 0.15
+    num_layers: 5
+
+  decode:
+    d_model: 512
+    activation: GELU
+    d_hidden: 1024
+    drop_prob: 0.15
+    
   d_model: 512
-  max_length: 50
-  activation: GELU
-  d_hidden: 1024
-  drop_prob: 0.15
-  n_head: 8
-  dropout: 0.1
-  num_layers: 5
   patch_size: 16
   image_size: 224
+  max_length: 50
   num_classes: 64000
+  
   pretrained: ''
 dataset:
   'train':

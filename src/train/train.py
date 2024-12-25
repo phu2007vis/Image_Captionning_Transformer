@@ -15,7 +15,7 @@ from utils import load_config
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	# parser.add_argument('--config',default=r'./src/configs/config.yaml')
-	parser.add_argument('--config',default=r'/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/image_captioning.yaml')
+	parser.add_argument('--config',default=r'/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr.yaml')
 	args = parser.parse_args()
 	config = load_config(args.config)
 	trainer = Trainer(config)

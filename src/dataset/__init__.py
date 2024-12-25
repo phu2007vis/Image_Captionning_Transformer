@@ -16,20 +16,17 @@ for dataset_name in os.listdir(dir_file):
         module_name = dataset_name.replace('.py', '')
 
         # Import the module from the 'dataset' subdirectory
-        try:
-            module = importlib.import_module(f"{dir_name}.{module_name}")
-        except ModuleNotFoundError as e:
-            print(f"Failed to import module {module_name}: {e}")
-            continue
+        
+        module = importlib.import_module(f"{dir_name}.{module_name}")
+       
 
         # Map the dataset name by removing '_dataset' from the module name
         map_name = module_name.replace('_dataset', '')
 
         # Ensure the mapped name exists as an attribute in the module
-        if hasattr(module, map_name):
-            dataset_register[map_name] = getattr(module, map_name)
-        else:
-            print(f"Attribute '{map_name}' not found in module '{module_name}'")
+     
+        dataset_register[map_name] = getattr(module, map_name)
+       
 
 def get_dataset(dataset_config):
     dataset_name = dataset_config.get('name')

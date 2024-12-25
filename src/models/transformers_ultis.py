@@ -13,9 +13,10 @@ class Embedding(nn.Module):
 	def __init__(self,config):
 		super(Embedding, self).__init__()
 
-		self.config = config.get('model')
+		self.config = config
 		self.d_model = self.config.get('d_model')
 		self.max_length = self.config.get('max_length')
+		
 		self.possition_embedding = nn.Embedding(self.max_length,self.d_model)
 
 	def forward(self,x):
@@ -32,7 +33,7 @@ def get_mlp_head(infeatures,outfeatuers,activation = 'GELU',dropout = 0.1):
 class FeedForward(nn.Module):
 	def __init__(self, config):
 		super(FeedForward, self).__init__()
-		self.config = config['model']
+		self.config = config
 
 		# Extract model configurations with proper defaults
 		d_model = self.config.get('d_model')  # Default to 512 if not specified

@@ -7,6 +7,7 @@ import torch
 import os
 from copy import deepcopy
 from torch.optim import Adam,AdamW
+from losses.L1Smoothing import LabelSmoothingLoss
 
 class VIETOCR(nn.Module):
 	def __init__(
@@ -59,7 +60,11 @@ class VIETOCR(nn.Module):
 		self.optimizer = AdamW(self.parameters(),**optim_config)
   
 	def setup_loss_fn(self):
-		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0)
+		# self.loss_fn = nn.CrossEntropyLoss(ignore_index=0)
+		self.loss_fn = LabelSmoothingLoss(
+					self.model_config['transformers']['vocab_size'], padding_idx=0, smoothing=0.05
+				)
+
 	def fetch_data(self,data):
 		self.img,self.tgt_input,self.tgt_key_padding_mask,self.labels   = data['img'].to(self.device),data['tgt_input'].to(self.device),data['tgt_padding_mask'].to(self.device),data['tgt_output']
 		self.labels = self.labels.to(self.device).view(-1)

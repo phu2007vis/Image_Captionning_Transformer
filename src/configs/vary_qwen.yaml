@@ -1,45 +1,20 @@
 
-device: 'cuda'
+device: 'cpu'
 
 model:
-  model_name: 'VIETOCR'
+  model_name: VARYQWEN
+  encoder:
+    encoder_embed_dim: 768
+    prompt_embed_dim: 256
+    image_size: 640
+    vit_patch_size: 16
+    encoder_depth: 10
+    encoder_num_heads: 12
+    encoder_global_attn_indexes: [2, 5, 8, 11]
+    checkpoint: null 
+    verbose: True
 
-  hidden_dim: 256
-
-
-  transformers:
-    d_model: 256
-    nhead: 8
-    num_encoder_layers: 6
-    num_decoder_layers: 6
-    dim_feedforward: 1024
-    max_seq_length: 4028
-    pos_dropout: 0.1
-    vocab_size: 35
-    trans_dropout: 0.1
-
-  backbone: vgg19_bn
-  cnn:
-    pretrained: True
-    # pooling stride size
-    ss:
-        - [2, 2]
-        - [2, 2]
-        - [2, 1]
-        - [2, 1]
-        - [1, 1]         
-    # pooling kernel size 
-    ks:
-        - [2, 2]
-        - [2, 2]
-        - [2, 1]
-        - [2, 1]
-        - [1, 1]
-    # dim of ouput feature map
-    hidden: 256
-    
   pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/2/best.pt'
-
 
 dataset:
   'train':

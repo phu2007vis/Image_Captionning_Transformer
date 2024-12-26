@@ -7,6 +7,7 @@ from dataset.vocab import Vocab
 from utils.resize_image import process_image
 from torch.utils.data import Dataset
 from torchvision import transforms
+from utils.viet_aug import ImgAugTransformV2
 
 
 class Collator(object):
@@ -88,11 +89,19 @@ class PLATEOCR(Dataset):
 		self.annotations = os.listdir(self.annotation_path)
 		self.vocab = Vocab(self.config['vocab'])
 		self.collate_fn = Collator(masked_language_model=masked_language_model)
-		self.transform = transform
-		if self.transform is None:
+		
+		if self.config['phase'] == 'train':
+			
+			self.transform = transforms.Compose([
+				ImgAugTransformV2(),
+                transforms.ToTensor(),
+            ])
+		elif self.config['phase'] == 'val':
 			self.transform = transforms.Compose([
                 transforms.ToTensor(),
             ])
+		else:
+			print(f"Phase {self.config['phase']} not found in ['tran','val]")
 		self.image_height = image_height
 		self.image_min_width = image_min_width
 		self.image_max_width = image_max_width

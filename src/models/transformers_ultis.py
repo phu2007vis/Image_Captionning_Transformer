@@ -4,10 +4,7 @@ import torch
 
 def get_activation(name):
 	return getattr(nn,name)()
-	# if name == 'ReLU':
-	# 	return nn.ReLU()
-	# elif name == 'GELU':
-	# 	return nn.GELU()
+
 	
 class Embedding(nn.Module):
 	def __init__(self,config):

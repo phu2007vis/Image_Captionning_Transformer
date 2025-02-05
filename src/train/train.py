@@ -19,5 +19,3 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	config = load_config(args.config)
 	trainer = Trainer(config)
-
-	import pdb;pdb.set_trace()

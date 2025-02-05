@@ -55,16 +55,38 @@ class RandomDottedLine(ImageOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ("num_lines",)
+    
+import numpy as np
+from torchvision import transforms
+class GaussianBlur:
+    def __init__(self):
+        pass
 
+    def __call__(self, img, mag=-1, prob=1.):
+        if np.random.uniform(0,1) > prob:
+            return img
+
+        W, H = img.size
+        #kernel = [(31,31)] prev 1 level only
+        kernel = (31, 31)
+        sigmas = [.5, 1, 2]
+        if mag<0 or mag>=len(kernel):
+            index = np.random.randint(0, len(sigmas))
+        else:
+            index = mag
+
+        sigma = sigmas[index]
+        return transforms.GaussianBlur(kernel_size=kernel, sigma=sigma)(img)
+    
 
 class ImgAugTransformV2:
     def __init__(self):
         self.aug = A.Compose(
             [
-                A.ColorJitter(p=0.2),
-                A.MotionBlur(blur_limit=3, p=0.2),
+                # A.ColorJitter(p=0.2),
+                # A.MotionBlur(blur_limit=3, p=0.2),
                 A.RandomBrightnessContrast(p=0.2),
-                A.Perspective(scale=(0.01, 0.05)),
+                # A.Perspective(scale=(0.01, 0.05)),
                 # RandomDottedLine(),
             ]
         )

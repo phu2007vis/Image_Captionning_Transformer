@@ -9,6 +9,9 @@ from models import get_model
 from tqdm import tqdm
 import metrics
 import torch
+import os
+import torch
+
 
 class Trainer(object):
     def __init__(self, config):
@@ -33,22 +36,63 @@ class Trainer(object):
             assert phase in ['train', 'val', 'test'], f"Can't recognize phase {phase} , ensure it in [ train, val , test]"
             phase_config = dataset_config[phase]  
             self.dataloader_register[phase] = get_dataloader(phase_config)
-        
-                
+
+        self.visualize()
+        # exit()
+
+    def visualize(self):
+        import math
+        import matplotlib.pyplot as plt
+        n = 0
+        num_images = 16  # Total number of images to display
+        grid_size = math.ceil(math.sqrt(num_images))  # Determine the size of the grid (square)
+
+        fig, axs = plt.subplots(grid_size, grid_size, figsize=(12, 12))
+        plt.subplots_adjust(wspace=0.5, hspace=0.8)  # Adjust spacing between subplots
+
+        for batch in self.dataloader_register['train']:
+            for i in range(10):
+                if n >= num_images:
+                    break
+
+                img = batch["img"][i].numpy().transpose(1, 2, 0)
+                sent = self.dataloader_register['train'].dataset.vocab.decode(batch["tgt_input"].T[i].tolist())
+
+                # Calculate row and column for the subplot
+                row, col = divmod(n, grid_size)
+                ax = axs[row, col]
+                ax.imshow(img)
+                ax.set_title(f"sent: {sent}", fontname="serif")
+                ax.axis("off")
+
+                n += 1
+
+            if n >= num_images:
+                break
+
+        # Remove any unused subplots if grid is larger than required
+        for i in range(n, grid_size * grid_size):
+            row, col = divmod(i, grid_size)
+            axs[row, col].axis("off")
+
+        plt.savefig("dataset.png", bbox_inches="tight")  # Save the figure
+    
+
     def train_one_epoch(self):
         
         self.model.train()
         self.pbar = tqdm(enumerate(self.dataloader_register['train']), total=len(self.dataloader_register['train']))
         
         for i, data in self.pbar:
-           
+            
             self.model.fetch_data(data)
          
             self.model.phuoc_forward()
+
             self.model.phuoc_optimize()
         
             loss = self.model.get_loss()
-         
+    
             self.train_iter += 1
             if self.train_iter % self.config['train']['print_frequency'] == 0:
                 self.pbar.set_description(f"Epoch {self.epoch + 1}/{self.config['train']['epochs']}, iter {self.train_iter}, Train loss: {loss}")
@@ -91,29 +135,33 @@ class Trainer(object):
                 labels.extend(label)
                 outputs.extend(output)
                 self.eval_loss += loss
-
         self.eval_loss /= len(dataloader)
+        print("eval_loss: ", self.eval_loss)
         
+    
+        for metric_name in self.config['evaluate'].get('metrics', []):
+            if hasattr(metrics, metric_name):
+                value = getattr(metrics, metric_name)(self.model, dataloader, labels, outputs)
+                print(f"{metric_name}: {value}")
+                metric = value
+            else:
+                print(f"Metric {metric_name} not found.")
+    
         if self.config['train'].get('save_folder'):
-            if self.model.compare_best_loss(self.eval_loss, self.best_loss):
+            if self.model.compare_best_loss(self.best_loss, metric):
                 self.save_path = os.path.join(self.save_folder, "best.pt")
-                self.best_loss = self.eval_loss
+                self.best_loss = metric
                 lstate = {}
                 lstate['model'] = self.model.state_dict()
                 lstate['best_loss'] = self.best_loss
                 torch.save(lstate, self.save_path)
                 
           
-                print(f"Save a best model at {self.save_path} - Best loss: {self.best_loss}")
+                print(f"Save a best model at {self.save_path} - Best accuracy: {self.best_loss}")
 
         
-        print("eval_loss: ", self.eval_loss)
-        for metric_name in self.config['evaluate'].get('metrics', []):
-            if hasattr(metrics, metric_name):
-                value = getattr(metrics, metric_name)(self.model, dataloader, labels, outputs)
-                print(f"{metric_name}: {value}")
-            else:
-                print(f"Metric {metric_name} not found.")
+        
+        
 
         self.model.train()
     
@@ -127,6 +175,8 @@ class Trainer(object):
             model_state_dict = state_dict['model']
             self.model.load_state_dict(state_dict=model_state_dict)
             print(f"Load pretrained model from {pretrained_path}")
+            self.best_loss = state_dict['best_loss']
+            print(f"Model best_loss: {self.best_loss}")
         else:
             print(f"No pretrained model found at {pretrained_path}")
 

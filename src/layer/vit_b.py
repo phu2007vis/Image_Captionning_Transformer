@@ -535,23 +535,23 @@ def _build_vary(
 			window_size=14,
 			out_chans=prompt_embed_dim,
 		)
-	if checkpoint is None:
-		checkpoint_link = r"https://huggingface.co/stepfun-ai/GOT-OCR2_0/resolve/main/model.safetensors"
-		from utils.dowload_weight import download
-		path  = download(checkpoint_link,name="model.safetensors")
+	# if checkpoint is None:
+	# 	checkpoint_link = r"https://huggingface.co/stepfun-ai/GOT-OCR2_0/resolve/main/model.safetensors"
+	# 	from utils.dowload_weight import download
+	# 	path  = download(checkpoint_link,name="model.safetensors")
 
-		from safetensors import safe_open
-		tensors = {}
-		with safe_open(path, framework="pt", device="cpu") as f:
+	# 	from safetensors import safe_open
+	# 	tensors = {}
+	# 	with safe_open(path, framework="pt", device="cpu") as f:
       
-			for key in f.keys():
-				tensors[key] = f.get_tensor(key)
-		image_encoder.custom_load_state(tensors,verbose=verbose)
-	if verbose:
-		total_params = 0
-		for param in image_encoder.parameters():
-			total_params += param.numel()
-		print(f"Total vision ender param: {total_params}")
+	# 		for key in f.keys():
+	# 			tensors[key] = f.get_tensor(key)
+	# 	image_encoder.custom_load_state(tensors,verbose=verbose)
+	# if verbose:
+	# 	total_params = 0
+	# 	for param in image_encoder.parameters():
+	# 		total_params += param.numel()
+	# 	print(f"Total vision ender param: {total_params}")
       
 	return image_encoder
 

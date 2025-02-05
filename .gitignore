@@ -2,3 +2,8 @@ src/*/__pycache*
 results/*
 data/*
 logs/*
+*.zip
+result*/*
+weights/*
+*.jpg
+*.png

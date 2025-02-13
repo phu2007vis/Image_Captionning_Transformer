@@ -10,8 +10,8 @@ import numpy as np
 
 resize = ProcessImageV2(size = 1240,color='black')
 
-img_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay"
-save_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay_plate_only"
+img_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_f"
+save_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_f_only"
 output_label_file = os.path.join(save_folder,"labels.csv")
 img_save_folder = os.path.join(save_folder,"images")
 os.makedirs(img_save_folder, exist_ok=True)

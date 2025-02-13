@@ -10,7 +10,7 @@ from torch.optim import AdamW
 from losses.L1Smoothing import LabelSmoothingLoss
 from torch.nn.functional import softmax,log_softmax
 import numpy as np
-# from utils.beam import Beam
+from utils.beam import Beam
 
 class VIETOCR(nn.Module):
 	def __init__(
@@ -45,7 +45,7 @@ class VIETOCR(nn.Module):
 		print(f'Cnn parameters: {sum}')
 		sum = 0 
 		for param in self.transformer.parameters():
-			param.requires_grad = False
+			# param.requires_grad = False
 			sum += param.numel()
 		print(f'Transformer parameters: {sum}')
 
@@ -98,6 +98,7 @@ class VIETOCR(nn.Module):
 
 				values = values[:, -1, 0]
 				values = values.tolist()
+
 				char_probs.append(values)
 
 				translated_sentence.append(indices)
@@ -106,12 +107,12 @@ class VIETOCR(nn.Module):
 				del output
 
 			translated_sentence = np.asarray(translated_sentence).T
-
+			
 			char_probs = np.asarray(char_probs).T
-			char_probs = np.multiply(char_probs, translated_sentence > 3)
-			char_probs = np.sum(char_probs, axis=-1) / (char_probs > 0).sum(-1)
+			# char_probs = np.multiply(char_probs, translated_sentence > 3)
+			# char_probs = np.sum(char_probs, axis=-1) / (char_probs > 0).sum(-1)
 
-			return translated_sentence
+			return translated_sentence,char_probs
 		
 	def translate_beam_search(
     self,img, beam_size=4, candidates=1, max_seq_length=10, sos_token=1, eos_token=2
@@ -135,7 +136,7 @@ class VIETOCR(nn.Module):
 				eos_token,
 			)
 
-		return sent
+		return sent,None
 
 
 	def beamsearch(
@@ -194,10 +195,10 @@ class VIETOCR(nn.Module):
 		self.optimizer = AdamW(filter(lambda p: p.requires_grad, self.parameters()),**optim_config)
   
 	def setup_loss_fn(self):
-		# self.loss_fn = nn.CrossEntropyLoss(ignore_index=0)
-		self.loss_fn = LabelSmoothingLoss(
-					self.model_config['transformers']['vocab_size'], padding_idx=0, smoothing=0.12
-				)
+		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.15)
+		# self.loss_fn = LabelSmoothingLoss(
+		# 			self.model_config['transformers']['vocab_size'], padding_idx=0, smoothing=0.15
+		# 		)
 
 	def fetch_data(self,data):
 		self.img,self.tgt_input,self.tgt_key_padding_mask,self.labels   = data['img'].to(self.device),data['tgt_input'].to(self.device),data['tgt_padding_mask'].to(self.device),data['tgt_output']

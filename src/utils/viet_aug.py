@@ -5,7 +5,8 @@ import albumentations as A
 from albumentations.core.transforms_interface import ImageOnlyTransform
 import cv2
 import random
-
+import numpy as np
+from torchvision import transforms
 
 class RandomDottedLine(ImageOnlyTransform):
     def __init__(self, num_lines=1, p=0.5):
@@ -56,8 +57,7 @@ class RandomDottedLine(ImageOnlyTransform):
     def get_transform_init_args_names(self):
         return ("num_lines",)
     
-import numpy as np
-from torchvision import transforms
+
 class GaussianBlur:
     def __init__(self):
         pass
@@ -84,9 +84,15 @@ class ImgAugTransformV2:
         self.aug = A.Compose(
             [
                 # A.ColorJitter(p=0.2),
-                # A.MotionBlur(blur_limit=3, p=0.2),
-                A.RandomBrightnessContrast(p=0.2),
-                # A.Perspective(scale=(0.01, 0.05)),
+                A.MotionBlur(blur_limit=3, p=0.2),
+                A.Perspective(scale=(0.01, 0.05)),
+                  A.OneOf(
+                        [
+                            A.CoarseDropout(max_holes=10, max_height=10, max_width=10, p=0.3),
+                            A.PixelDropout(dropout_prob=0.01, p=0.2),
+                        ],
+                        p=0.7,
+                    ),
                 # RandomDottedLine(),
             ]
         )

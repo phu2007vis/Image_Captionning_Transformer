@@ -64,9 +64,18 @@ class Infer(object):
 	def inference(self):
 		if self.tensor == None:
 			return None
-		outputs = self.model.translate(self.tensor)
+		outputs,prob = self.model.translate(self.tensor)
+
 		index = outputs
-		index = index[0].tolist()
+		
+		old_index = index[0].tolist()
+		old_prob = prob[0].tolist()
+		index = old_index
+		# index = []
+		# for i,prob in zip(old_index,old_prob):
+		# 	if prob > 0.7:	
+		# 		index.append(i)
+
 		text = self.vocab.decode(index)
 		return text
 	def evaluate_folder(self,folder_path,save_folder):
@@ -97,14 +106,14 @@ class Infer(object):
 	def evaluate_folder_with_label_map(self,folder_path,save_folder,label_path,is_plate = False):
 	 
 		label_map = pd.read_csv(label_path)
-  
+		label_map.names = label_map.names.apply(extract_real_name)
 		if os.path.exists(save_folder):
 			shutil.rmtree(save_folder)
 		count  = 0
 		dung =  0 
 		sai = 0
 		image_names = os.listdir(folder_path)
-  
+	
 		for image_name in tqdm(image_names):
 			
    
@@ -112,10 +121,13 @@ class Infer(object):
 			self.load_image_from_path(image_path,is_plate=is_plate)
 			text = self.inference()
 			try:
-				label = label_map[label_map['names'] == os.path.splitext(extract_real_name(image_name))[0]]['plate'].values[0]
+				
+				# label = label_map[label_map['names'] == os.path.splitext(extract_real_name(image_name))[0]]['plate'].values[0]
+				label = label_map[label_map['names'] == extract_real_name(image_name)]['plate'].values[0]
 			except:
+			
 				continue
-
+			label = label.replace("-","")
 			if text == label:
 				sub_save_folder = os.path.join(save_folder,'dung')
 				dung+=1
@@ -125,7 +137,7 @@ class Infer(object):
 				
 	
 			os.makedirs(sub_save_folder,exist_ok=True)
-			image_name = f"{text}_{count}.jpg"
+			image_name = f"{text}_{label}_{count}.jpg"
 			save_path = os.path.join(sub_save_folder,image_name)
 			# shutil.copy(image_path,save_path)
 			self.plate.save(save_path)
@@ -168,9 +180,22 @@ if __name__ == '__main__':
  
 	# infer.load_image_from_path(r"/work/21013187/phuoc/Image_Captionning_Transformer/data/image.png",is_plate=False)
 	# print(infer.inference())
-	# infer.evaluate_folder(r"/work/21013187/phuoc/Image_Captionning_Transformer/data/split_ted2/test/images",save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/inference")
+	# infer.evaluate_folder(r"/work/21013187/phuoc/Image_Captionning_Transformer/data/split_ted2/val/images",
+    #                    save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/inference")
+ 
 	# infer.evaluate_folder_with_label_map(folder_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/images",
-	# 								  save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/inference_test",
-	# 								  label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/labels_2.csv")
-	infer.crop_and_save_plate("/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay",
-                           	save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay_plate_only")
+	# 								  save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/infer_test",
+	# 								  label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/labels_2.csv",
+    #        										is_plate= False)
+ 
+	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/license_plate_0-8/train/images",
+                                      save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_ver1",
+                                       label_path="/work/21013187/phuoc/msi_license_plate/phuong_lp_map.csv",
+                                       is_plate=True)
+	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data2/images",
+	# 									save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/ga",
+	# 									label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data2/labels.csv",
+	# 									is_plate=True)
+ 
+	# infer.crop_and_save_plate("/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay",
+    #                        	save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay_plate_only")

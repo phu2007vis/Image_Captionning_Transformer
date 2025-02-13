@@ -132,8 +132,15 @@ class Trainer(object):
                 loss = self.model.get_loss()
                 output = self.model.get_output().tolist()
                 label = self.model.get_label().tolist()
-                labels.extend(label)
-                outputs.extend(output)
+                output = self.model.get_output().tolist()
+
+
+                filtered = [(o, l) for o, l in zip(output, label) if l != 0]
+                outputs.extend([o for o, l in filtered])
+                labels.extend([l for o, l in filtered])
+
+                # labels.extend(label)
+                # outputs.extend(output)
                 self.eval_loss += loss
         self.eval_loss /= len(dataloader)
         print("eval_loss: ", self.eval_loss)

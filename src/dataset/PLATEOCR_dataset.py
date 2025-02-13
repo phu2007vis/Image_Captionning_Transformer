@@ -95,31 +95,32 @@ class PLATEOCR(Dataset):
 		if self.config['phase'] == 'train':
 			
 			self.transform = transforms.Compose([
-				# ImgAugTransformV2(),
+				ImgAugTransformV2(),
 				GaussianBlur(),
-				transforms.RandomRotation(15),
+				transforms.RandomRotation(20),
 				transforms.ColorJitter(brightness=0.2,contrast  = 0.2),
 				transforms.Grayscale(3),
-                transforms.ToTensor(),
-            ])
+				transforms.ToTensor(),
+			])
 		elif self.config['phase'] == 'val':
 			
 			self.transform = transforms.Compose([
 				transforms.Grayscale(3),
-                transforms.ToTensor(),
+				transforms.ToTensor(),
 				
-            ])
+			])
 		else:
 			print(f"Phase {self.config['phase']} not found in ['tran','val]")
 			
 		self.image_height = image_height
 		self.image_min_width = image_min_width
 		self.image_max_width = image_max_width
+		print(f"Number samples: {len(self)}")
 
 	
 
 	def __getitem__(self, idx):
-     
+	 
 		name = self.annotations[idx]
 		txt_path = os.path.join(self.annotation_path,name)
   
@@ -147,14 +148,19 @@ class PLATEOCR(Dataset):
 		global totensor 
 		totensor = transforms.Compose([
 				transforms.Grayscale(3),
-                transforms.ToTensor(),
-            ])
+				transforms.ToTensor(),
+			])
 		
 		def default_transform(image):
 			global totensor
-			image_height = 224
-			image_min_width = 112
-			image_max_width = 448
+   
+			# image_height = 224
+			# image_max_width = 448
+			image_height = 280
+			image_max_width = 500
+
+			image_min_width = 120
+   
 			processed_image = process_image(image,image_height, image_min_width, image_max_width)
 			return totensor(processed_image)
 		return default_transform
@@ -163,7 +169,7 @@ class PLATEOCR(Dataset):
 		global visulize
 		visulize = transforms.Compose([
 				transforms.Grayscale(1),
-            ])
+			])
 		
 		def default_visualize(image):
 			global visulize

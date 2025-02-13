@@ -39,7 +39,9 @@ model:
     # dim of ouput feature map
     hidden: 256
     
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt'
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/14/best.pt'
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt'
 
 
 dataset:

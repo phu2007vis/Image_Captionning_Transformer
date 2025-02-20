@@ -4,22 +4,22 @@ import torch
 import cv2
 import os
 import sys
-
+torch.cuda.set_device(4) 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # Load the trained YOLO model
 # yolov8 = YOLO(r"C:\Users\Admin\Downloads\weights\best.pt")  
 # yolov11 = YOLO(r"weights\yolov11m_detection.pt")
-yolov11 = YOLO(r"/work/21013187/phuoc/best_25k.pt")
+yolov11 = YOLO(r"/work/21013187/phuoc/best_25k.pt").to("cuda:4")
 
 
 from inference.utils_2 import padding
-from inference.inception_inference import runner
+# from inference.inception_inference import runner
 # number_0 = YOLO(r"weights\best_0.pt")
-number_0 = YOLO(r"/work/21013187/phuoc/best_uc3_val.pt")
+# number_0 = YOLO(r"/work/21013187/phuoc/best_uc3_val.pt")
 # cls_model = YOLO(r"C:\Users\Admin\Downloads\license_plate2\weights\best_cls_2.pt")
-cls_model = YOLO(r"/work/21013187/phuoc/best_300_v2.pt")
+# cls_model = YOLO(r"/work/21013187/phuoc/best_300_v2.pt")
 # cls_model = YOLO(r"C:\Users\Admin\Downloads\best_300_v2.pt")
 # yolov11 = YOLO(r"C:\Users\Admin\Downloads\best (2).pt")
 yolov8 = None
@@ -42,16 +42,19 @@ model_name = ['yolov8','yolov11']
 
 
 def convert_float_to_int(box):
-    """
-    Convert float boxes to integer boxes.
-    """
-    return [int(box[0]), int(box[1]), int(box[2]), int(box[3])]
+	"""
+	Convert float boxes to integer boxes.
+	"""
+	return [int(box[0]), int(box[1]), int(box[2]), int(box[3])]
 def crop_img(image,box):
-    """
-    Crop the image using the given box.
-    """
-    x1, y1, x2, y2 = box
-    return image[y1:y2, x1:x2]
+	"""
+	Crop the image using the given box.
+	"""
+	x1, y1, x2, y2 = box
+	if isinstance(image,Image.Image):
+		return image.crop((x1, y1, x2, y2))
+
+	return image[y1:y2, x1:x2]
 def top1_plate(img):
 	result = yolov11(img,verbose = False,conf = 0.35)[0]
 	if len(result.boxes) == 0:

@@ -8,7 +8,7 @@ from utils.resize_image import process_image
 from torch.utils.data import Dataset
 from torchvision import transforms
 from utils.viet_aug import ImgAugTransformV2,GaussianBlur
-
+import random
 # from aug import *
 
 class Collator(object):
@@ -95,10 +95,13 @@ class PLATEOCR(Dataset):
 		if self.config['phase'] == 'train':
 			
 			self.transform = transforms.Compose([
+				transforms.RandomRotation(degrees=10,fill= (255,255,255)),
+				transforms.RandomAffine(degrees=0, translate=(0, 0.17),fill=(255, 255, 255)),
 				ImgAugTransformV2(),
-				GaussianBlur(),
-				transforms.RandomRotation(20),
-				transforms.ColorJitter(brightness=0.2,contrast  = 0.2),
+    			
+				transforms.GaussianBlur(kernel_size = 3, sigma=(3,5)),
+			
+				transforms.ColorJitter(brightness=(0.3,1.2),contrast  = 0.3),
 				transforms.Grayscale(3),
 				transforms.ToTensor(),
 			])
@@ -133,8 +136,14 @@ class PLATEOCR(Dataset):
 		word = self.vocab.encode(word)
 		pil_image = Image.open(image_path)
 		pil_image = process_image(pil_image,self.image_height,self.image_min_width,self.image_max_width)
+		w,h = pil_image.size
+		rand_size = random.randint(28,50)
+		# rand_size = 38
+		pil_image = pil_image.resize((rand_size, rand_size), Image.BILINEAR)
+		pil_image = pil_image.resize((w, h), Image.BILINEAR)
 		
 		tensor_img = self.transform(pil_image)
+		# print(tensor_img.shape)
 		return {
 			'img': tensor_img,
 			'word': word,

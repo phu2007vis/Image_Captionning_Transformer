@@ -57,8 +57,8 @@ class Infer(object):
 			plate = cv2.cvtColor(plate, cv2.COLOR_BGR2RGB)
 			pil_img = Image.fromarray(plate)
    
-		# self.plate = self.default_visualize(pil_img)
-		self.plate = pil_img
+		self.plate = self.default_visualize(pil_img)
+		# self.plate = pil_img
 		tensor = self.default_transform(pil_img)
 		self.tensor = tensor.unsqueeze(0).to(self.device)
 	def inference(self):
@@ -180,22 +180,22 @@ if __name__ == '__main__':
  
 	# infer.load_image_from_path(r"/work/21013187/phuoc/Image_Captionning_Transformer/data/image.png",is_plate=False)
 	# print(infer.inference())
-	# infer.evaluate_folder(r"/work/21013187/phuoc/Image_Captionning_Transformer/data/split_ted2/val/images",
-    #                    save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/inference")
+
  
 	# infer.evaluate_folder_with_label_map(folder_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/images",
 	# 								  save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/infer_test",
 	# 								  label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/labels_2.csv",
     #        										is_plate= False)
  
-	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/license_plate_0-8/train/images",
-                                      save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_ver1",
-                                       label_path="/work/21013187/phuoc/msi_license_plate/phuong_lp_map.csv",
+	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/license_plate_0-8/train/images",
+    #                                   save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_ver1",
+    #                                    label_path="/work/21013187/phuoc/msi_license_plate/phuong_lp_map.csv",
+    #                                    is_plate=True)
+	
+	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/images",
+											save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_bien_xa_number",
+                                       label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1/labels.csv",
                                        is_plate=True)
-	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data2/images",
-	# 									save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/ga",
-	# 									label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data2/labels.csv",
-	# 									is_plate=True)
  
 	# infer.crop_and_save_plate("/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay",
     #                        	save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay_plate_only")

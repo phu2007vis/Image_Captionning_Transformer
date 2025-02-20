@@ -79,7 +79,7 @@ class Inference(object):
 		conf,predict = self.predict(image_tensor,top_k= 1)
 		return conf.squeeze().item(),names[predict.squeeze().item()]
 
-runner = Inference('/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/number_classifier.yaml')
+# runner = Inference('/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/number_classifier.yaml')
 
 if __name__ == '__main__':
 	

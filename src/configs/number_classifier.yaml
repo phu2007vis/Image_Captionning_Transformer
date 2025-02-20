@@ -1,5 +1,5 @@
 
-device: 'cuda'
+device: 'cuda:2'
 image_size: 180
 model:
   model_name: 'INCEPTION'

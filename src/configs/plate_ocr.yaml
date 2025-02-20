@@ -1,5 +1,5 @@
 
-device: 'cuda:0'
+device: 'cuda:7'
 
 
 model:
@@ -15,9 +15,9 @@ model:
     num_decoder_layers: 6
     dim_feedforward: 1024
     max_seq_length: 4028
-    pos_dropout: 0.1
+    pos_dropout: 0.12
     vocab_size: 35
-    trans_dropout: 0.1
+    trans_dropout: 0.12
 
   backbone: vgg19_bn
   cnn:
@@ -40,21 +40,23 @@ model:
     hidden: 256
     
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
-  pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/13/best.pt'
+  pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/38/best.pt'
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt
 
 
 dataset:
   'train':
     name: 'PLATEOCR'
     phase: train
-    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data2'
+    # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/train'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data4'
     masked_language_model: True
     image_height: 280
     image_min_width: 120
     image_max_width: 500
     vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
     loader_config: 
-      batch_size: 20
+      batch_size: 35
       shuffle: true
       # num_workers: 1
       drop_last: true
@@ -62,21 +64,21 @@ dataset:
   'val':
     name: 'PLATEOCR'
     phase: val
-    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/train'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number'
     masked_language_model: False
     image_height: 280
     image_min_width: 120
     image_max_width: 500
     vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
     loader_config: 
-      batch_size: 25
+      batch_size: 35
       shuffle: true
       # num_workers: 1
       # pin_memory: true
       drop_last: true
 
 optim:
-  lr: 0.00002
+  lr: 0.00005
 train: 
   print_frequency: 10
   epochs: 100
@@ -84,6 +86,6 @@ train:
   # save_folder: ''
 
 evaluate:
-  frequency: 100
+  frequency: 50
   metrics:
     - accuracy_classification

@@ -14,7 +14,6 @@ for file in os.listdir(folder_path):
 		# Remove the file extension to get the module name
 		module_name = file.replace('.py', '')
 	
-		
 		module = importlib.import_module(f'{folder_name}.{module_name}')
 		class_name = module_name.replace("_model","")
 		model_register[class_name] = getattr(module,class_name)
@@ -23,5 +22,6 @@ def get_model(config):
     model_name = config.get('model').get('model_name')
     model_initor = model_register[model_name]
     model = model_initor(config)
+  
     model.to(config.get('device'))
     return model

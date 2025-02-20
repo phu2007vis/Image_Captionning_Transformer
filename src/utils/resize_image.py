@@ -49,9 +49,25 @@ class ProcessImageV2:
 
         w, h = img.size
         new_w, new_h = resize_v2(w, h, size)
-
+        self.new_w,self.new_h = new_w,new_h
+        self.pad = self.size-min(self.new_h,self.new_w)
         img = img.resize((new_w, new_h), Image.LANCZOS)
         
         img = ImageOps.pad(img, (size, size), color= self.color)
         
         return img
+    def caculate_reletive_location(self,x1y1x2y2,new_w,new_h,pad,original_w,original_h):
+        
+        x1, y1, x2, y2 = x1y1x2y2
+        if new_w > new_h:
+            new_x1 = int(x1/new_w*original_w)
+            new_x2 = int(x2/new_w*original_w)
+            new_y1 = int((y1-pad//2)/new_h*original_h)
+            new_y2 = int((y2-pad//2)/new_h*original_h)
+        else:
+            new_x1 = int((x1-pad//2)/new_w*original_w)
+            new_x2 = int((x2-pad//2)/new_w*original_w)
+            new_y1 = int(y1/new_h*original_h)
+            new_y2 = int(y2/new_h*original_h)
+        
+        return new_x1, new_y1, new_x2, new_y2

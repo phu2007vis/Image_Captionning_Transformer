@@ -3,8 +3,8 @@ import shutil
 from os.path import join
 import pandas as pd 
 
-img_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1/images"
-csv_output_file = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1/labels.csv"
+img_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square/images"
+csv_output_file = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square/labels.csv"
 csv_map = {
 	'names': [],
 	'plate': []

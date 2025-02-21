@@ -7,7 +7,6 @@ import torch
 import os
 from copy import deepcopy
 from torch.optim import AdamW
-from losses.L1Smoothing import LabelSmoothingLoss
 from torch.nn.functional import softmax,log_softmax
 import numpy as np
 from utils.beam import Beam
@@ -65,8 +64,7 @@ class VIETOCR(nn.Module):
 		# src = src.permute(1,2,0)
 		# src = self.proj(src)
 		# #N,B,D
-		# src = src.permute(2,0,1)
-		
+		# src = src.permute(2,0,1
 		self.outputs = self.transformer(src, tgt_input, tgt_key_padding_mask=tgt_key_padding_mask)
 	def translate(self,img, max_seq_length=10, sos_token=1, eos_token=2):
 		model = self
@@ -195,7 +193,7 @@ class VIETOCR(nn.Module):
 		self.optimizer = AdamW(filter(lambda p: p.requires_grad, self.parameters()),**optim_config)
   
 	def setup_loss_fn(self):
-		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.17)
+		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.22)
 		# self.loss_fn = LabelSmoothingLoss(
 		# 			self.model_config['transformers']['vocab_size'], padding_idx=0, smoothing=0.15
 		# 		)

@@ -17,21 +17,21 @@ model:
     max_seq_length: 4028
     pos_dropout: 0.1
     vocab_size: 35
-    trans_dropout: 0.1
+    trans_dropout: 0.15
 
   backbone: vgg19_bn
   cnn:
     pretrained: True
     # pooling stride size
     ss:
-        - [2, 2]
+        - [3, 3]
         - [2, 2]
         - [2, 1]
         - [2, 1]
         - [1, 1]         
     # pooling kernel size 
     ks:
-        - [2, 2]
+        - [3, 3]
         - [2, 2]
         - [2, 1]
         - [2, 1]
@@ -40,7 +40,8 @@ model:
     hidden: 256
     
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/38/best.pt'
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/78/best.pt'
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt'
 
 

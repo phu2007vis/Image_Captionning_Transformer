@@ -176,7 +176,7 @@ class Infer(object):
 			pbar.update(1)
 			ret, frame = cap.read()
 			# frame  = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-			if count > 50000:
+			if count > 3000:
 				break
 			if not ret:
 				break

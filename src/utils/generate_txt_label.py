@@ -1,8 +1,9 @@
 import os
 import shutil
 
-image_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/images"
-save_folder = "//work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/labels"
+root_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square"
+image_folder = os.path.join(root_folder,"images")
+save_folder = os.path.join(root_folder,"labels")
 if os.path.exists(save_folder):
     shutil.rmtree(save_folder)
 os.makedirs(save_folder,exist_ok=True)

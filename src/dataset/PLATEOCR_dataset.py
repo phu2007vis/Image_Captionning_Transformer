@@ -7,8 +7,9 @@ from dataset.vocab import Vocab
 from utils.resize_image import process_image
 from torch.utils.data import Dataset
 from torchvision import transforms
-from utils.viet_aug import ImgAugTransformV2,GaussianBlur
+from utils.viet_aug import ImgAugTransformV2,GaussianBlur,UpwardsShift
 import random
+import albumentations as A
 # from aug import *
 
 class Collator(object):
@@ -52,11 +53,7 @@ class Collator(object):
 		tgt_output = np.roll(tgt_input, -1, 0).T
 		tgt_output[:, -1] = 0
 
-		# random mask token
-		# if self.masked_language_model:
-		# 	mask = np.random.random(size=tgt_input.shape) < 0.05
-		# 	mask = mask & (tgt_input != 0) & (tgt_input != 1) & (tgt_input != 2)
-		# 	tgt_input[mask] = 3
+	
 
 		tgt_padding_mask = np.array(target_weights) == 0
 
@@ -91,24 +88,31 @@ class PLATEOCR(Dataset):
 		self.annotations = os.listdir(self.annotation_path)
 		self.vocab = Vocab(self.config['vocab'])
 		self.collate_fn = Collator(masked_language_model=masked_language_model)
-		
+		self.numpy_transform = None
 		if self.config['phase'] == 'train':
 			
 			self.transform = transforms.Compose([
-				transforms.RandomRotation(degrees=10,fill= (255,255,255)),
-				transforms.RandomAffine(degrees=0, translate=(0, 0.17),fill=(255, 255, 255)),
-				ImgAugTransformV2(),
-    			
-				transforms.GaussianBlur(kernel_size = 3, sigma=(3,5)),
+       
 			
-				transforms.ColorJitter(brightness=(0.3,1.2),contrast  = 0.3),
-				transforms.Grayscale(3),
+				
+				transforms.ColorJitter(brightness=(0.3,1.4),contrast  = 0.3),
+				ImgAugTransformV2(),
+				
+    			transforms.RandomApply([transforms.RandomRotation(degrees=10,fill= (255,255,255))],p = 0.7),
+			
+				UpwardsShift(0.2),
+				
+				# transforms.GaussianBlur(kernel_size = 3, sigma=(1,2)),
+				# transforms.Grayscale(3),
 				transforms.ToTensor(),
 			])
 		elif self.config['phase'] == 'val':
-			
+		# 	self.numpy_transform = A.Compose(
+       	# 		[A.AutoContrast(p = 1)]
+        #   )
 			self.transform = transforms.Compose([
-				transforms.Grayscale(3),
+				# transforms.Grayscale(3),
+				
 				transforms.ToTensor(),
 				
 			])
@@ -136,12 +140,8 @@ class PLATEOCR(Dataset):
 		word = self.vocab.encode(word)
 		pil_image = Image.open(image_path)
 		pil_image = process_image(pil_image,self.image_height,self.image_min_width,self.image_max_width)
-		w,h = pil_image.size
-		rand_size = random.randint(28,50)
-		# rand_size = 38
-		pil_image = pil_image.resize((rand_size, rand_size), Image.BILINEAR)
-		pil_image = pil_image.resize((w, h), Image.BILINEAR)
-		
+		if self.numpy_transform is not None:
+			pil_image = Image.fromarray(self.numpy_transform(image=np.asarray(pil_image))["image"])
 		tensor_img = self.transform(pil_image)
 		# print(tensor_img.shape)
 		return {
@@ -156,37 +156,53 @@ class PLATEOCR(Dataset):
 	def get_default_transform():
 		global totensor 
 		totensor = transforms.Compose([
-				transforms.Grayscale(3),
+				# transforms.Grayscale(3),
 				transforms.ToTensor(),
 			])
-		
+		numpy_transform = A.Compose(
+				[A.AutoContrast(p = 1)]
+    	)
+		# numpy_transform = None
 		def default_transform(image):
 			global totensor
-   
+			
 			# image_height = 224
 			# image_max_width = 448
-			image_height = 280
-			image_max_width = 500
+			# image_height = 350
+			image_height = 400
+			image_max_width = 10000
 
 			image_min_width = 120
-   
+			
 			processed_image = process_image(image,image_height, image_min_width, image_max_width)
+			# processed_image = np.asarray(processed_image)
+			# processed_image = numpy_transform(image=processed_image)
+			# processed_image = processed_image["image"]
+			# processed_image = Image.fromarray(processed_image)
 			return totensor(processed_image)
 		return default_transform
 	@staticmethod
 	def get_default_visualize():
 		global visulize
-		visulize = transforms.Compose([
-				transforms.Grayscale(1),
-			])
-		
+		# visulize = transforms.Compose([
+		# 		# transforms.Grayscale(1),
+		# 	])
+		numpy_transform = A.Compose(
+				[A.AutoContrast( p = 1)]
+    	)
 		def default_visualize(image):
 			global visulize
-			image_height = 224
+			image_height = 400
 			image_min_width = 112
-			image_max_width = 448
+			image_max_width = 10000
 			processed_image = process_image(image,image_height, image_min_width, image_max_width)
-			return visulize(processed_image)
+			
+			# processed_image = np.asarray(processed_image)
+			# processed_image = numpy_transform(image=processed_image)
+			# processed_image = processed_image["image"]
+			# processed_image = Image.fromarray(processed_image)
+   
+			return processed_image
 		return default_visualize
 	
 

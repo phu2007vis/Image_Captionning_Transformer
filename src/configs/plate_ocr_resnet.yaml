@@ -1,5 +1,5 @@
 
-device: 'cuda:7'
+device: 'cuda:6'
 
 
 model:
@@ -17,30 +17,30 @@ model:
     max_seq_length: 4028
     pos_dropout: 0.12
     vocab_size: 35
-    trans_dropout: 0.15
+    trans_dropout: 0.12
 
-  backbone: vgg19_bn
+  backbone: resnet
   cnn:
     pretrained: False
     # pooling stride size
     ss:
-        - [3, 3]
+        - [2, 2]
         - [2, 2]
         - [2, 1]
         - [2, 1]
         - [1, 1]         
     # pooling kernel size 
     ks:
-        - [3, 3]
+        - [2, 2]
         - [2, 2]
         - [2, 1]
         - [2, 1]
         - [1, 1]
     # dim of ouput feature map
     hidden: 256
-    
+  pretrained: ''
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
-  pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
+  # pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/38/best.pt'
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt
 
 
@@ -49,11 +49,11 @@ dataset:
     name: 'PLATEOCR'
     phase: train
     # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/train'
-    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data_just_rec_2'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data4'
     masked_language_model: True
-    image_height: 400
+    image_height: 280
     image_min_width: 120
-    image_max_width: 10000
+    image_max_width: 500
     vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
     loader_config: 
       batch_size: 35
@@ -64,16 +64,17 @@ dataset:
   'val':
     name: 'PLATEOCR'
     phase: val
-    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number'
     masked_language_model: False
-    image_height: 400
+    image_height: 280
     image_min_width: 120
-    image_max_width: 10000
+    image_max_width: 500
     vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
     loader_config: 
       batch_size: 35
       shuffle: true
-      
+      # num_workers: 1
+      # pin_memory: true
       drop_last: true
 
 optim:
@@ -81,7 +82,7 @@ optim:
 train: 
   print_frequency: 10
   epochs: 100
-  save_folder: ''
+  save_folder: 'results_test_ocr'
   # save_folder: ''
 
 evaluate:

@@ -193,7 +193,7 @@ class VIETOCR(nn.Module):
 		self.optimizer = AdamW(filter(lambda p: p.requires_grad, self.parameters()),**optim_config)
   
 	def setup_loss_fn(self):
-		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.22)
+		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.25)
 		# self.loss_fn = LabelSmoothingLoss(
 		# 			self.model_config['transformers']['vocab_size'], padding_idx=0, smoothing=0.15
 		# 		)

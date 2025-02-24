@@ -90,7 +90,10 @@ class ImgAugTransformV2:
 				# A.RandomToneCurve(scale = 0.6),
     			A.AdditiveNoise (noise_type='gaussian', spatial_mode='per_pixel', p= 0.7,approximation = 0.1),
 				Perspective(scale=(0.02, 0.08), p=0.3,fit_output = True,fill = (255,255,255)),
-				A.Downscale(scale_range = (0.1,0.12), interpolation_pair  = {'upscale':  1,'downscale': 3},p = 1),
+				# A.Defocus(radius=(1,2),alias_blur = (0,0.021),p = 0.5),
+				A.ColorJitter(brightness = (0.3,1.2),contrast = [0.1,1.8],p = 0.8, saturation = 0.4 ,hue = 0.2),
+				A.Downscale(scale_range = (0.07,0.12), interpolation_pair  = {'upscale':  1,'downscale': 3},p = 1),
+				A.ColorJitter(brightness = (0.3,1.2),contrast = [0.1,1.8],p = 0.8, saturation = 0.4 ,hue = 0.2),
 				# A.ZoomBlur(max_factor = [1,1.31],step_factor = [0.01,0.03]),
 				# A.MotionBlur(blur_limit=3, p= 0.5),
 				# A.OneOf([
@@ -149,7 +152,7 @@ class UpwardsShift(transforms.RandomAffine):
 
         # Random translation values
         tx = random.uniform(-max_shift_x, max_shift_x) * img_width  # Horizontal shift
-        ty = -random.uniform(0, max_shift_y) * img_height  # Only shift **upwards**
+        ty = -random.uniform(-0.1, max_shift_y) * img_height  # Only shift **upwards**
 
         scale = 1.0  # Fixed scale (was mistakenly a tuple before)
         shear = 0.0

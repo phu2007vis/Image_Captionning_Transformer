@@ -95,7 +95,7 @@ class PLATEOCR(Dataset):
        
 			
 				
-				transforms.ColorJitter(brightness=(0.3,1.4),contrast  = 0.3),
+				# transforms.ColorJitter(brightness=(0.3,1.4),contrast  = 0.3),
 				ImgAugTransformV2(),
 				
     			transforms.RandomApply([transforms.RandomRotation(degrees=10,fill= (255,255,255))],p = 0.7),

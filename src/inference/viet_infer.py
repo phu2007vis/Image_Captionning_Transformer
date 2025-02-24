@@ -102,7 +102,7 @@ class Infer(object):
 					continue
 				self.count_save_image[text] += 1
     
-				save_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_original_ver2"
+				save_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_original_ver33"
 				os.makedirs(save_folder,exist_ok=True)
 				img_name = f"{text}_{random.randint(0,999999)}_{random.randint(0,9999)}.jpg"
 				img_path = os.path.join(save_folder,img_name)
@@ -176,8 +176,8 @@ class Infer(object):
 			pbar.update(1)
 			ret, frame = cap.read()
 			# frame  = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-			if count > 3000:
-				break
+			# if count > 3000:
+			# 	break
 			if not ret:
 				break
 			count += 1
@@ -260,4 +260,5 @@ if __name__ == '__main__':
  
 	config = load_config(config_file)
 	infer = Infer(config=config)
-	infer.infer_video("/work/21013187/phuoc/Image_Captionning_Transformer/data/IMG_1890.MOV","output.mp4")
+	# infer.infer_video("/work/21013187/phuoc/Image_Captionning_Transformer/data/IMG_1890.MOV","output2.mp4")
+	infer.infer_video("/work/21013187/phuoc/Image_Captionning_Transformer/IMG_2644.MOV","output3.mp4")

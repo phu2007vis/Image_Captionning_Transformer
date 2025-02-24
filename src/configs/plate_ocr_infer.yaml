@@ -41,7 +41,7 @@ model:
     
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/78/best.pt'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/83/best.pt'
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt'
 
 

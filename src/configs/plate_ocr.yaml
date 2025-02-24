@@ -40,7 +40,9 @@ model:
     hidden: 256
     
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
-  pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
+  # pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/79/best.pt
+  pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/83/best.pt
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/weights/viet_ocr/best.pt
 
 
@@ -81,7 +83,7 @@ optim:
 train: 
   print_frequency: 10
   epochs: 100
-  save_folder: ''
+  save_folder: 'results_test_ocr'
   # save_folder: ''
 
 evaluate:

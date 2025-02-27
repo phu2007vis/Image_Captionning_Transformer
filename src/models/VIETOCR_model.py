@@ -2,6 +2,7 @@ from layer.resnet import Resnet50
 from layer.vgg import vgg19_bn
 from torch import nn
 from layer.viet_transformer import LanguageTransformer
+from layer.efficient import Efficient
 from utils.dowload_weight import download_weights
 import torch
 import os
@@ -25,26 +26,33 @@ class VIETOCR(nn.Module):
 
 		if self.model_config['backbone'] == 'resnet':
 			self.cnn = Resnet50(hidden_dim)
-		else:
+		elif self.model_config['backbone'] == 'vgg19_bn':
 			print('VGG19 backbone')
 			self.cnn = vgg19_bn(**self.model_config['cnn'])
+		else:
+			self.cnn = Efficient(hidden_dim)
 		
 		max_length_pe = self.model_config['transformers'].pop('max_seq_length')
 		self.model_config['transformers']['max_seq_length'] = 1024
 		self.transformer =  LanguageTransformer(**self.model_config['transformers'])
-		self.load_transformer_weight()
-  
 		dropout = self.model_config.get('transformers').get("pos_dropout")
 		d_model = self.model_config.get('transformers').get("d_model")
 		self.transformer.replace_pe(d_model,max_seq_length = max_length_pe,dropout = dropout)
+  
+		self.load_transformer_weight()
+  
 		sum = 0 
 		for param in self.cnn.parameters():
 			# param.requires_grad = False
 			sum += param.numel()
 		print(f'Cnn parameters: {sum}')
 		sum = 0 
+  
+		if not self.model_config.get('transformer_fine_tune',True):
+			print("Turn off transformer!")
 		for param in self.transformer.parameters():
-			# param.requires_grad = False
+			if not self.model_config.get('transformer_fine_tune',True):
+				param.requires_grad = False
 			sum += param.numel()
 		print(f'Transformer parameters: {sum}')
 
@@ -66,6 +74,8 @@ class VIETOCR(nn.Module):
 		# #N,B,D
 		# src = src.permute(2,0,1
 		self.outputs = self.transformer(src, tgt_input, tgt_key_padding_mask=tgt_key_padding_mask)
+		self.do_loss()
+  
 	def translate(self,img, max_seq_length=10, sos_token=1, eos_token=2):
 		model = self
 		model.eval()
@@ -113,7 +123,7 @@ class VIETOCR(nn.Module):
 			return translated_sentence,char_probs
 		
 	def translate_beam_search(
-    self,img, beam_size=4, candidates=1, max_seq_length=10, sos_token=1, eos_token=2
+	self,img, beam_size=4, candidates=1, max_seq_length=10, sos_token=1, eos_token=2
 	):
 		model = self
 		# img: 1xCxHxW
@@ -217,38 +227,73 @@ class VIETOCR(nn.Module):
 
 	def forward(self):
 		self.phuoc_forward()
-	def clear_gradient(self):
-		self.optimizer.zero_grad()
+		
+  
 	def phuoc_optimizer_step(self):
-		self.losses.backward()
+		# print(f"Update weights")
 		self.optimizer.step()
+		self.clear_gradient()
+  
 	def do_loss(self):
 		outputs = self.outputs.view(-1,self.outputs.size(-1))
 		self.losses = self.loss_fn(outputs,self.labels)
-		
-	def phuoc_optimize(self):
-
-		self.do_loss()
-		self.clear_gradient()
-		self.phuoc_optimizer_step()
-	def load_transformer_weight(self,transformer_weight = "https://vocr.vn/data/vietocr/vgg_transformer.pth"):
-		print("Load transformer weights from {}".format(transformer_weight))
-		weight_file = download_weights(transformer_weight)
-		state_dict = torch.load(weight_file,map_location='cpu')
+		if self.training:
+			self.losses.backward()
+			# print("Backward loss")
+	def clear_gradient(self):
+		self.optimizer.zero_grad()
+		# print("Clear gradient")
+  
+	# def load_transformer_weight(self,transformer_weight = "https://vocr.vn/data/vietocr/vgg_transformer.pth"):
+	# 	print("Load transformer weights from {}".format(transformer_weight))
+	# 	weight_file = download_weights(transformer_weight)
+	# 	state_dict = torch.load(weight_file,map_location='cpu')
 	   
 		
-		current_model_state = self.state_dict()
-		for key in state_dict.keys():
+	# 	current_model_state = self.state_dict()
+	# 	for key in state_dict.keys():
 			
-			if key in ['transformer.embed_tgt.weight','transformer.fc.weight','transformer.fc.bias']:
-				continue
-			if key.startswith('cnn') :
-				new_key = key.replace('model.','')
-			else:
-				new_key = key
+	# 		if key in ['transformer.embed_tgt.weight','transformer.fc.weight','transformer.fc.bias']:
+	# 			continue
+	# 		if key.startswith('cnn') :
+	# 			new_key = key.replace('model.','')
+	# 		else:
+	# 			new_key = key
 			
-			if new_key in current_model_state.keys():
-				# print(new_key)
-				current_model_state[new_key] = deepcopy(state_dict[key])
+	# 		if new_key in current_model_state.keys():
+	# 			# print(new_key)
+	# 			current_model_state[new_key] = deepcopy(state_dict[key])
 		
 		# self.transformer.load_state_dict(transformer_weights,strict=False)
+	def load_transformer_weight(self):
+		try:
+			weight_file = self.model_config['transformer_pretrained']
+			state_dict = torch.load(weight_file, map_location='cpu')['model']
+		except:
+			print("Can not fine file pretraieed transformer weights skipping!")
+			return
+      
+		
+		
+		current_model_state = self.transformer.state_dict()
+		updated_state_dict = {}
+		
+		for key in state_dict.keys():
+			if key.startswith('cnn'):
+				# print(f"Skipping CNN key: {key}")
+				continue
+			
+			# Normalize key by ensuring 'transformer.' prefix
+			new_key = 'transformer.' + key.replace('transformer.', '')
+			new_key_fc = key.replace('transformer.', '')
+   
+			if new_key in current_model_state.keys():
+				updated_state_dict[new_key] = deepcopy(state_dict[key])
+			elif new_key_fc in current_model_state.keys():
+					updated_state_dict[new_key_fc] = deepcopy(state_dict[key])
+			else:
+				print(f"Warning: Key {new_key} or {new_key_fc} not found in transformer state_dict")
+		
+		# Apply the updated weights to the transformer
+		self.transformer.load_state_dict(updated_state_dict, strict=False)
+		print("Transformer weights loaded successfully.")

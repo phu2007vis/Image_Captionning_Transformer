@@ -4,14 +4,14 @@ import torch
 import cv2
 import os
 import sys
-torch.cuda.set_device(4) 
+torch.cuda.set_device(0) 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 # Load the trained YOLO model
 # yolov8 = YOLO(r"C:\Users\Admin\Downloads\weights\best.pt")  
 # yolov11 = YOLO(r"weights\yolov11m_detection.pt")
-yolov11 = YOLO(r"/work/21013187/phuoc/best_25k.pt").to("cuda:4")
+yolov11 = YOLO(r"/work/21013187/phuoc/best_25k.pt").cuda()
 
 
 from inference.utils_2 import padding

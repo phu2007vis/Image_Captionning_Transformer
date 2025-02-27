@@ -1,5 +1,5 @@
 
-device: 'cuda:7'
+device: 'cuda:1'
 num_mini_batches: 4
 verbose: True
 
@@ -19,9 +19,15 @@ model:
     pos_dropout: 0.12
     vocab_size: 35
     trans_dropout: 0.15
+
+  transformer_pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/87/best.pt'
   transformer_fine_tune: True
 
-  backbone: vgg19_bn
+  label_smoothing: 0.1
+
+
+
+  backbone: inception
   cnn:
     pretrained: False
     # pooling stride size
@@ -44,9 +50,9 @@ model:
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
   # pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/79/best.pt
-  pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/87/best.pt
-  
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_incept/VIETOCR/17/best.pt'
 
 
 dataset:
@@ -56,12 +62,12 @@ dataset:
     # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/train'
     root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data_just_rec_2'
     masked_language_model: True
-    image_height: 500
+    image_height: 600
     image_min_width: 120
     image_max_width: 10000
     vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
     loader_config: 
-      batch_size: 15
+      batch_size: 20
       shuffle: true
       # num_workers: 1
       drop_last: true
@@ -70,8 +76,9 @@ dataset:
     name: 'PLATEOCR'
     phase: val
     root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square'
+    # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/val'
     masked_language_model: False
-    image_height: 500
+    image_height: 600
     image_min_width: 120
     image_max_width: 10000
     vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
@@ -82,12 +89,12 @@ dataset:
       drop_last: true
 
 optim:
-  lr: 0.00006
+  lr: 0.00005
   
 train: 
   print_frequency: 10
   epochs: 100
-  save_folder: 'results_test_ocr'
+  save_folder: 'results_incept'
   # save_folder: ''
 
 evaluate:

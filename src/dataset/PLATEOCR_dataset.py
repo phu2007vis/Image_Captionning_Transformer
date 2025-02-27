@@ -94,24 +94,20 @@ class PLATEOCR(Dataset):
 			self.transform = transforms.Compose([
        
 			
-				
-				# transforms.ColorJitter(brightness=(0.3,1.4),contrast  = 0.3),
+		
 				ImgAugTransformV2(),
 				
     			transforms.RandomApply([transforms.RandomRotation(degrees=10,fill= (255,255,255))],p = 0.7),
 			
-				UpwardsShift(0.2),
+				UpwardsShift(0.22),
 				
-				# transforms.GaussianBlur(kernel_size = 3, sigma=(1,2)),
-				# transforms.Grayscale(3),
+				
+			
 				transforms.ToTensor(),
 			])
 		elif self.config['phase'] == 'val':
-		# 	self.numpy_transform = A.Compose(
-       	# 		[A.AutoContrast(p = 1)]
-        #   )
+		
 			self.transform = transforms.Compose([
-				# transforms.Grayscale(3),
 				
 				transforms.ToTensor(),
 				
@@ -153,55 +149,36 @@ class PLATEOCR(Dataset):
 	def __len__(self):
 		return len(self.annotations)	
 	@staticmethod
-	def get_default_transform():
+	def get_default_transform(image_size):
 		global totensor 
 		totensor = transforms.Compose([
-				# transforms.Grayscale(3),
+			
 				transforms.ToTensor(),
 			])
-		numpy_transform = A.Compose(
-				[A.AutoContrast(p = 1)]
-    	)
-		# numpy_transform = None
+		
 		def default_transform(image):
 			global totensor
 			
-			# image_height = 224
-			# image_max_width = 448
-			# image_height = 350
-			image_height = 400
+			
+			image_height = image_size
 			image_max_width = 10000
-
 			image_min_width = 120
 			
 			processed_image = process_image(image,image_height, image_min_width, image_max_width)
-			# processed_image = np.asarray(processed_image)
-			# processed_image = numpy_transform(image=processed_image)
-			# processed_image = processed_image["image"]
-			# processed_image = Image.fromarray(processed_image)
+			
 			return totensor(processed_image)
 		return default_transform
 	@staticmethod
-	def get_default_visualize():
+	def get_default_visualize(image_size):
 		global visulize
-		# visulize = transforms.Compose([
-		# 		# transforms.Grayscale(1),
-		# 	])
-		numpy_transform = A.Compose(
-				[A.AutoContrast( p = 1)]
-    	)
+	
 		def default_visualize(image):
 			global visulize
-			image_height = 400
+			image_height = image_size
 			image_min_width = 112
 			image_max_width = 10000
 			processed_image = process_image(image,image_height, image_min_width, image_max_width)
-			
-			# processed_image = np.asarray(processed_image)
-			# processed_image = numpy_transform(image=processed_image)
-			# processed_image = processed_image["image"]
-			# processed_image = Image.fromarray(processed_image)
-   
+		
 			return processed_image
 		return default_visualize
 	

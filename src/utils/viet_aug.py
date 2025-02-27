@@ -86,45 +86,32 @@ class ImgAugTransformV2:
 	def __init__(self):
 		self.aug = A.Compose(
 				[
-			# [   A.RandomShadow(p=0.2),
-				# A.RandomToneCurve(scale = 0.6),
-    			A.AdditiveNoise (noise_type='gaussian', spatial_mode='per_pixel', p= 0.7,approximation = 0.1),
+		
+    			A.AdditiveNoise (noise_type='gaussian', spatial_mode='per_pixel', p= 0.8,approximation = 0.1),
 				Perspective(scale=(0.02, 0.08), p=0.3,fit_output = True,fill = (255,255,255)),
-				# A.Defocus(radius=(1,2),alias_blur = (0,0.021),p = 0.5),
+			
+				A.RandomRain(brightness_coefficient=1.0, drop_length=2, drop_width=1, drop_color = (255, 255, 255), blur_value=5, rain_type = 'drizzle', p=0.3), 
 				A.ColorJitter(brightness = (0.3,1.2),contrast = [0.1,1.8],p = 0.8, saturation = 0.4 ,hue = 0.2),
-				A.Downscale(scale_range = (0.07,0.12), interpolation_pair  = {'upscale':  1,'downscale': 3},p = 1),
-				A.ColorJitter(brightness = (0.3,1.2),contrast = [0.1,1.8],p = 0.8, saturation = 0.4 ,hue = 0.2),
-				# A.ZoomBlur(max_factor = [1,1.31],step_factor = [0.01,0.03]),
-				# A.MotionBlur(blur_limit=3, p= 0.5),
-				# A.OneOf([
-				# 	#add black pixels noise
-				# 	A.OneOf([
-				# 			A.RandomRain(brightness_coefficient=1.0, drop_length=2, drop_width=2, drop_color = (0, 0, 0), blur_value=1, rain_type = 'drizzle', p=0.05), 
-				# 			A.RandomShadow(p=1),
-				# 			A.PixelDropout(p=1),
-				# 		], p=0.9),
-
-				# 	#add white pixels noise
-				# 	A.OneOf([
-				# 			A.PixelDropout(dropout_prob=0.5,drop_value=255,p=1),
-				# 			A.RandomRain(brightness_coefficient=1.0, drop_length=2, drop_width=2, drop_color = (255, 255, 255), blur_value=1, rain_type = 'drizzle', p=1), 
-				# 		], p=0.9),
-				# 	], p=0.3),
-					  
+				A.Defocus(radius=(1,3),alias_blur = (0.1,0.5),p = 0.7),
+				A.Downscale(scale_range = (0.04,0.09), interpolation_pair  = {'upscale':  1,'downscale': 3},p = 1),
+				A.MotionBlur(blur_limit=16, p= 0.8),
+				
+			
+			
 				RandomDottedLine(3),
 			]
 		)
-		self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+		self.kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 	
 	def __call__(self, img):
 		img = np.asarray(img)
 		kernel  = self.kernel
-		if random.randint(1, 5) == 1:
-			# dilation because the image is not inverted
-			img = cv2.erode(img, kernel, iterations=random.randint(1, 1))
-		if random.randint(1, 5) == 1:
+		# if random.randint(1, 3) == 1:
+		# 	# dilation because the image is not inverted
+		# 	img = cv2.erode(img, kernel, iterations=random.randint(1, 1))
+		if random.randint(1, 3) == 1:
 			# erosion because the image is not inverted
-			img = cv2.dilate(img, kernel,iterations=random.randint(1, 1))
+			img = cv2.dilate(img, kernel,iterations=random.randint(1, 3))
 			
 		transformed = self.aug(image=img)
 		img = transformed["image"]
@@ -152,7 +139,7 @@ class UpwardsShift(transforms.RandomAffine):
 
         # Random translation values
         tx = random.uniform(-max_shift_x, max_shift_x) * img_width  # Horizontal shift
-        ty = -random.uniform(-0.1, max_shift_y) * img_height  # Only shift **upwards**
+        ty = -random.uniform(-0.22, max_shift_y) * img_height  # Only shift **upwards**
 
         scale = 1.0  # Fixed scale (was mistakenly a tuple before)
         shear = 0.0

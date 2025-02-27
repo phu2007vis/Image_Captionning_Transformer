@@ -25,13 +25,15 @@ class Infer(object):
 		self.model = get_model(config)
 		self.model.eval()
 		print(f"Device: {self.config['device']}")
-		
+		self.image_size = self.config['image_size']
+		print(f"Infer image size: {self.image_size}")
 		self.load_pretrained_model()
-		self.default_transform = PLATEOCR.get_default_transform()
-		self.default_visualize = PLATEOCR.get_default_visualize()
+		self.default_transform = PLATEOCR.get_default_transform(self.image_size)
+		self.default_visualize = PLATEOCR.get_default_visualize(self.image_size)
   
 		self.vocab = Vocab(self.config['vocab'])
 		self.device = self.config['device']
+  
 	def load_pretrained_model(self):
 		pretrained_path = self.config['model']['pretrained']
 		state_dict = torch.load(pretrained_path, map_location=self.config['device'])
@@ -41,7 +43,7 @@ class Infer(object):
 		self.best_score = state_dict['best_loss']
 		print(f"Best score: {self.best_score}")
 	def load_image_from_path(self,path,is_plate = True):
-        
+		
 		if is_plate:
 			pil_img = Image.open(path)
 			
@@ -153,7 +155,7 @@ class Infer(object):
 		image_names = os.listdir(folder_path)
   
 		for image_name in tqdm(image_names):
-      
+	  
 			id = os.path.splitext(image_name)[0]
 			image_path = os.path.join(folder_path,image_name)
 			
@@ -171,7 +173,8 @@ class Infer(object):
 
 
 if __name__ == '__main__':
-	config_file = r"/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr_infer.yaml"
+	# config_file = r"/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr_infer.yaml"
+	config_file = "/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr_inception_net_infer.yaml"
  
 	from utils import load_config
  
@@ -185,21 +188,25 @@ if __name__ == '__main__':
 	# infer.evaluate_folder_with_label_map(folder_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/images",
 	# 								  save_folder=r"/work/21013187/phuoc/Image_Captionning_Transformer/results/infer_test",
 	# 								  label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/labels_2.csv",
-    #        										is_plate= False)
+	#        										is_plate= False)
  
-	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/license_plate_0-8/train/images",
-                                      save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_ver1",
-                                       label_path="/work/21013187/phuoc/msi_license_plate/phuong_lp_map.csv",
-                                       is_plate=True)
+	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/license_plate_0-8/train/images",
+	#                                   save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_ver1",
+	#                                    label_path="/work/21013187/phuoc/msi_license_plate/phuong_lp_map.csv",
+	#                                    is_plate=True)
 	
 	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/images",
 	# 										save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_bien_xa_number",
-    #                                    label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/labels.csv",
-    #                                    is_plate=True)
+	#                                    label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/labels.csv",
+	#                                    is_plate=True)
 	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square/images",
 											save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_bien_xa_number",
-                                       label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number/labels.csv",
-                                       is_plate=True)
+	                                   label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square/labels.csv",
+	                                   is_plate=True)
+	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/val/images",
+	# 										save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/val_maulual",
+	# 								   label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/val/labels.csv",
+	# 								   is_plate=True)
  
 	# infer.crop_and_save_plate("/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay",
-    #                        	save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay_plate_only")
+	#                        	save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/data/xemay_plate_only")

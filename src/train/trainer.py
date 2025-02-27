@@ -4,6 +4,7 @@ import tqdm
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 from dataset import get_dataloader
 from models import get_model
 from tqdm import tqdm
@@ -19,13 +20,16 @@ class Trainer(object):
         self.config = config
         self.model = get_model(config)
         print(f"Device: {self.config['device']}")
+        self.num_mini_batches = self.config['num_mini_batches']
+        print(f"Num mini batches: {self.config['num_mini_batches']}")
         
         self.load_pretrained_model()
         
         self.save_path = self.config.get('save_folder')
-        
+        self.verbose  = self.config.get('verbose')
         self.setup_dataset()
         self.train()
+        
     
     def setup_dataset(self):
         
@@ -44,10 +48,10 @@ class Trainer(object):
         import math
         import matplotlib.pyplot as plt
         n = 0
-        num_images = 16  # Total number of images to display
+        num_images = 64  # Total number of images to display
         grid_size = math.ceil(math.sqrt(num_images))  # Determine the size of the grid (square)
 
-        fig, axs = plt.subplots(grid_size, grid_size, figsize=(12, 12))
+        fig, axs = plt.subplots(grid_size, grid_size, figsize=(24, 24))
         plt.subplots_adjust(wspace=0.5, hspace=0.8)  # Adjust spacing between subplots
 
         for batch in self.dataloader_register['train']:
@@ -82,23 +86,25 @@ class Trainer(object):
         
         self.model.train()
         self.pbar = tqdm(enumerate(self.dataloader_register['train']), total=len(self.dataloader_register['train']))
-        
+        self.model.clear_gradient()
         for i, data in self.pbar:
             
             self.model.fetch_data(data)
-         
             self.model.phuoc_forward()
-
-            self.model.phuoc_optimize()
-        
             loss = self.model.get_loss()
-    
+            
+            if (i+1)%self.num_mini_batches == 0:
+                self.model.phuoc_optimizer_step()
+       
             self.train_iter += 1
             if self.train_iter % self.config['train']['print_frequency'] == 0:
                 self.pbar.set_description(f"Epoch {self.epoch + 1}/{self.config['train']['epochs']}, iter {self.train_iter}, Train loss: {loss}")
             if self.train_iter % self.config['evaluate']['frequency'] == 0:
                 self.evaluate(phase='val')
-    
+                self.model.train()
+                
+        if (i + 1) % self.num_mini_batches != 0:
+            self.model.phuoc_optimizer_step()
     def train(self):
         self.best_loss = self.model.get_init_best_loss()
         self.model.setup_optimizer()
@@ -128,7 +134,6 @@ class Trainer(object):
             for data in dataloader:
                 self.model.fetch_data(data)
                 self.model.phuoc_forward()
-                self.model.do_loss()
                 loss = self.model.get_loss()
                 output = self.model.get_output().tolist()
                 label = self.model.get_label().tolist()

@@ -1,0 +1,52 @@
+
+device: 'cuda:3'
+verbose: True
+vocab: "1234567890."
+image_size: 500
+
+model:
+  model_name: 'VIETOCR'
+
+  hidden_dim: 256
+
+  transformers:
+    d_model: 256
+    nhead: 8
+    num_encoder_layers: 6
+    num_decoder_layers: 6
+    dim_feedforward: 1024
+    max_seq_length: 4028
+    pos_dropout: 0.12
+    vocab_size: 15
+    trans_dropout: 0.15
+
+  transformer_fine_tune: True
+
+  backbone: vgg19_bn
+  cnn:
+    pretrained: False
+    # pooling stride size
+    ss:
+        - [3, 3]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]         
+    # pooling kernel size 
+    ks:
+        - [3, 3]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]
+    # dim of ouput feature map
+    hidden: 256
+    
+  # the weight not contain the fc layer 
+  # weight_pretrained:  /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
+
+  # load all weight
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_hw/VIETOCR/14/best.pt'
+ 
+  

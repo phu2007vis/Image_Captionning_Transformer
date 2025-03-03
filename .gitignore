@@ -10,3 +10,8 @@ weights/*
 *.MOV
 *.filepart
 *.mp4
+checkpoint*.pt
+data2/
+src*/*/__pycache*
+basic-trainer/*
+wandb/*

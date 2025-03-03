@@ -1,0 +1,62 @@
+
+device: 'cpu'
+
+model:
+  model_name: 'CAPTIONING_TRANSFORMERS'
+
+  encode:
+    d_model: 512
+    activation: GELU
+    d_hidden: 1024
+    drop_prob: 0.15
+    n_head: 8
+    dropout: 0.15
+    num_layers: 5
+
+  decode:
+    d_model: 512
+    activation: GELU
+    d_hidden: 1024
+    drop_prob: 0.15
+    
+  d_model: 512
+  patch_size: 16
+  image_size: 224
+  max_length: 50
+  num_classes: 64000
+  
+  pretrained: ''
+dataset:
+  'train':
+    name: 'IMAGECAPTIONING'
+    img_folder: /home/21013187/.cache/kagglehub/datasets/phuocnguyenxuan/image-captioning/versions/1/train-images
+    json_file: /home/21013187/.cache/kagglehub/datasets/phuocnguyenxuan/image-captioning/versions/1/train_data.json
+    max_len: 50
+    loader_config: 
+      batch_size: 128
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+  'val':
+    name: 'IMAGECAPTIONING'
+
+    img_folder: /home/21013187/.cache/kagglehub/datasets/phuocnguyenxuan/image-captioning/versions/1/public-test-images
+    json_file: /home/21013187/.cache/kagglehub/datasets/phuocnguyenxuan/image-captioning/versions/1/test_data.json
+    max_len: 50
+    loader_config: 
+      batch_size: 128
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+
+optim:
+  lr: 0.0002
+train: 
+  print_frequency: 10
+  epochs: 100
+  save_folder: results
+
+evaluate:
+  frequency: 1000
+  metrics:
+    - accuracy_classification

@@ -1,0 +1,76 @@
+device: 'cuda:7'
+
+model:
+  model_name: GOTOCR
+  encoder:
+    encoder_embed_dim: 768
+    prompt_embed_dim: 256
+    image_size: 1024
+    vit_patch_size: 16
+    encoder_depth: 10
+    encoder_num_heads: 12
+    encoder_global_attn_indexes: [2, 5, 8, 11]
+    checkpoint: null
+    verbose: false
+  decoder:
+    verbose: false
+    attention_dropout: 0.0
+    hidden_act: "silu"
+    hidden_size: 1024
+    initializer_range: 0.02
+    intermediate_size: 2816
+    max_position_embeddings: 32768
+    max_window_layers: 21
+    num_attention_heads: 16
+    num_hidden_layers: 24
+    num_key_value_heads: 16
+    rms_norm_eps: 0.000001
+    rope_theta: 0.000001
+    sliding_window: 32768
+    tie_word_embeddings: true
+    use_cache: False
+    use_sliding_window: false
+    vocab_size: 40
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/2/best.pt'
+
+dataset:
+  'train':
+    name: 'PLATEOCR'
+    phase: train
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/OCR_Phuoc/train'
+    masked_language_model: True
+    image_height: 1024
+    image_min_width: 120
+    image_max_width: 448
+    vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0-"
+    loader_config: 
+      batch_size: 8
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+  'val':
+    name: 'PLATEOCR'
+    phase: val
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/OCR_Phuoc/val'
+    masked_language_model: False
+    image_height: 1024
+    image_min_width: 1674
+    image_max_width: 1024
+    vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0-"
+    loader_config: 
+      batch_size: 8
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+
+optim:
+  lr: 0.00005
+train: 
+  print_frequency: 10
+  epochs: 100
+  save_folder: results
+
+evaluate:
+  frequency: 100
+  metrics:
+    - accuracy_classification

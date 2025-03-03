@@ -1,0 +1,43 @@
+
+device: 'cuda:2'
+image_size: 180
+model:
+  model_name: 'INCEPTION'
+  num_classes: 30
+  class_names: ['']
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/INCEPTION/17/best.pt'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test/INCEPTION/0/best.pt'
+
+dataset:
+  'train':
+    name: 'CLASSIFIER'
+    data_dir: "/work/21013187/phuoc/License_Plate/data/OCR_classification_split_300_clean/train"
+    phase: 'train'
+    image_size: 180
+    aug_rotate: 15
+    loader_config: 
+      batch_size: 128
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+  'val':
+    data_dir: "/work/21013187/phuoc/License_Plate/data/OCR_classification_split_300_clean/val"
+    name: 'CLASSIFIER'
+    phase: 'test'
+    image_size: 180
+    loader_config: 
+      batch_size: 180
+      shuffle: true
+      drop_last: true
+
+optim:
+  lr: 0.00004
+train: 
+  print_frequency: 10
+  epochs: 30
+  save_folder: 'results_test'
+
+evaluate:
+  frequency: 10
+  metrics:
+    - accuracy_classification

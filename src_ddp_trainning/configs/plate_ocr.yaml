@@ -1,0 +1,96 @@
+
+device: 'cuda:7'
+num_mini_batches: 4
+verbose: True
+
+model:
+  model_name: 'VIETOCR'
+
+  hidden_dim: 256
+
+
+  transformers:
+    d_model: 256
+    nhead: 8
+    num_encoder_layers: 6
+    num_decoder_layers: 6
+    dim_feedforward: 1024
+    max_seq_length: 4028
+    pos_dropout: 0.12
+    vocab_size: 35
+    trans_dropout: 0.15
+  transformer_fine_tune: True
+
+  backbone: vgg19_bn
+  cnn:
+    pretrained: False
+    # pooling stride size
+    ss:
+        - [3, 3]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]         
+    # pooling kernel size 
+    ks:
+        - [3, 3]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]
+    # dim of ouput feature map
+    hidden: 256
+    
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
+  # pretrained:  '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/79/best.pt
+  pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/87/best.pt
+  
+
+
+dataset:
+  'train':
+    name: 'PLATEOCR'
+    phase: train
+    # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/train'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/synthetic_data_just_rec_2'
+    masked_language_model: True
+    image_height: 500
+    image_min_width: 120
+    image_max_width: 10000
+    vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
+    loader_config: 
+      batch_size: 15
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+      # pin_memory: true
+  'val':
+    name: 'PLATEOCR'
+    phase: val
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square'
+    masked_language_model: False
+    image_height: 500
+    image_min_width: 120
+    image_max_width: 10000
+    vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
+    loader_config: 
+      batch_size: 35
+      shuffle: true
+      
+      drop_last: true
+
+optim:
+  lr: 0.00006
+  
+train: 
+  print_frequency: 10
+  epochs: 100
+  save_folder: 'results_test_ocr'
+  # save_folder: ''
+
+evaluate:
+  frequency: 100
+  metrics:
+    - accuracy_classification

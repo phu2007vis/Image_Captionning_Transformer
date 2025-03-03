@@ -46,7 +46,7 @@ model:
 
   # load all weight
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.534.pth'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.488_0.172.pth'
  
   
 
@@ -95,6 +95,6 @@ train:
   save_folder: 'results_hw'
 
 evaluate:
-  frequency: 1000
+  frequency: 50
   metrics:
     - accuracy_classification

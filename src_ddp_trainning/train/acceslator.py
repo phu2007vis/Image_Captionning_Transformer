@@ -195,7 +195,7 @@ def train_ddp_accelerate():
 			accuracy_sen,accuracy_char = evaluate(accelerator,model,test_loader)
 			accelerator.wait_for_everyone()
 			#setup path save
-			save_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer"
+			save_folder = "/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer2"
 			os.makedirs(save_folder,exist_ok=True)
    
 			save_path = os.path.join(save_folder,f"{i}_{round(accuracy_char,3)}_{round(accuracy_sen,3)}.pth")

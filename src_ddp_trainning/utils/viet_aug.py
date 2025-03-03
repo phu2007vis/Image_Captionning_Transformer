@@ -92,17 +92,17 @@ class RandomDottedLine(ImageOnlyTransform):
 	def random_setup_horizal(self):
 		h, w = self.img.shape[:2]
 		max_height = int(0.6*h)
-		max_left = int(0.3*w)
-		max_right = int(0.7*w)
+		max_left = int(0.2*w)
+		max_right = int(0.8*w)
 		self.x1, self.y1 = np.random.randint(0, max_left), np.random.randint(max_height, h)
 		self.x2, self.y2 = np.random.randint(max_right, w), np.random.randint(max_height, h)
 		self.random_generally()
 	def random_left_vertical(self):
 	 
 		h, w = self.img.shape[:2]
-		max_width = int(0.2*w)
-		max_top = int(0.2*h)
-		max_bottom = int(0.8*h)
+		max_width = int(0.15*w)
+		max_top = int(0.1*h)
+		max_bottom = int(0.9*h)
   
 		self.x1, self.y1 = np.random.randint(0, max_width), np.random.randint(0,max_top)
 		self.x2, self.y2 = np.random.randint(0,max_width), np.random.randint(max_bottom, h)
@@ -110,9 +110,9 @@ class RandomDottedLine(ImageOnlyTransform):
 	def random_right_vertical(self):
 	 
 		h, w = self.img.shape[:2]
-		max_width = int(0.8*w)
-		max_top = int(0.2*h)
-		max_bottom = int(0.8*h)
+		max_width = int(0.85*w)
+		max_top = int(0.1*h)
+		max_bottom = int(0.9*h)
   
 		self.x1, self.y1 = np.random.randint(max_width, w), np.random.randint(0,max_top)
 		self.x2, self.y2 = np.random.randint(max_width,w), np.random.randint(max_bottom, h)
@@ -162,7 +162,7 @@ class ImgAugTransformV2:
 				# A.Rotate(limit=30, p=0.7),
 				# A.RandomRain(brightness_coefficient=1.0, drop_length=2, drop_width=1, drop_color = (255, 255, 255), blur_value=5, rain_type = 'drizzle', p=0.3), 
 				RandomDottedLine(2),
-				A.ColorJitter(brightness = 0.2,contrast = 0.2,p = 0.8),
+				# A.ColorJitter(brightness = 0.2,contrast = 0.2,p = 0.8),
 				
 				A.OneOf([
 					#add black pixels noise
@@ -186,7 +186,7 @@ class ImgAugTransformV2:
 						A.Affine(shear=random.randint(-5, 5),mode=cv2.BORDER_CONSTANT, cval=(255,255,255), p=1)          
 				], p=0.5),
 				
-				A.Blur(blur_limit=5,p=0.25),
+				A.Blur(blur_limit=3,p=0.25),
 
 			]
 		)
@@ -198,15 +198,16 @@ class ImgAugTransformV2:
 		kernel  = self.kernel
 	
 		# if random.randint(1, 3) == 1:
-		# 	# erosion because the image is not inverted
-		# 	img = cv2.dilate(img, kernel,iterations=random.randint(1, 3))
-		if random.randint(1, 5) == 1:
-			# dilation because the image is not inverted
-			img = cv2.erode(img, kernel, iterations=random.randint(1, 2))
-		if random.randint(1, 6) == 1:
 			# erosion because the image is not inverted
-			img = cv2.dilate(img, kernel,iterations=random.randint(1, 1))
-			
+			# img = cv2.dilate(img, kernel,iterations=random.randint(1, 3))
+		# if random.randint(1, 5) == 1:
+		# 	# dilation because the image is not inverted
+		if random.randint(1, 2) == 1:
+			img = cv2.erode(img, kernel, iterations=random.randint(2, 4))
+		# if random.randint(1, 6) == 1:
+		# 	# erosion because the image is not inverted
+		# 	img = cv2.dilate(img, kernel,iterations=random.randint(1, 1))
+		# img = cv2.dilate(img, kernel,iterations=random.randint(3, 3))
 		transformed = self.aug(image=img)
 		img = transformed["image"]
 		img = Image.fromarray(img)

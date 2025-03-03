@@ -47,6 +47,7 @@ model:
 
   # load all weight
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.488_0.172.pth'
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.488_0.172.pth'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer2/best_batch_250_e1_0.466_0.129.pth'
  
   

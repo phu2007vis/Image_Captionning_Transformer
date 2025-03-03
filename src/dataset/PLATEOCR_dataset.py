@@ -7,9 +7,8 @@ from dataset.vocab import Vocab
 from utils.resize_image import process_image
 from torch.utils.data import Dataset
 from torchvision import transforms
-from utils.viet_aug import ImgAugTransformV2,GaussianBlur,UpwardsShift
-import random
-import albumentations as A
+from utils.viet_aug import ImgAugTransformV2,UpwardsShift,WrapAug
+
 # from aug import *
 
 class Collator(object):
@@ -92,16 +91,9 @@ class PLATEOCR(Dataset):
 		if self.config['phase'] == 'train':
 			
 			self.transform = transforms.Compose([
-       
-			
-		
+				WrapAug(p =[0.7,0.7,0]),
 				ImgAugTransformV2(),
-				
-    			transforms.RandomApply([transforms.RandomRotation(degrees=10,fill= (255,255,255))],p = 0.7),
-			
-				UpwardsShift(0.22),
-				
-				
+    			# transforms.RandomApply([transforms.RandomRotation(degrees=10,fill= (255,255,255))]),
 			
 				transforms.ToTensor(),
 			])
@@ -127,7 +119,7 @@ class PLATEOCR(Dataset):
 		name = self.annotations[idx]
 		txt_path = os.path.join(self.annotation_path,name)
   
-		id = name.split(".")[0]
+		id = os.path.splitext(name)[0]
 		image_name = id+".jpg"
 		image_path = os.path.join(self.image_dir,image_name)
   

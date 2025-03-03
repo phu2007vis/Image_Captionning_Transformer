@@ -1,0 +1,101 @@
+
+device: 'cuda:2'
+num_mini_batches: 5
+verbose: True
+
+model:
+  model_name: 'VIETOCR'
+
+  hidden_dim: 256
+
+
+  transformers:
+    d_model: 256
+    nhead: 8
+    num_encoder_layers: 6
+    num_decoder_layers: 6
+    dim_feedforward: 1024
+    max_seq_length: 4028
+    pos_dropout: 0.12
+    vocab_size: 15
+    trans_dropout: 0.15
+  transformer_fine_tune: True
+
+  backbone: vgg19_bn
+  cnn:
+    pretrained: False
+    # pooling stride size
+    ss:
+        - [3, 3]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]         
+    # pooling kernel size 
+    ks:
+        - [3, 3]
+        - [2, 2]
+        - [2, 1]
+        - [2, 1]
+        - [1, 1]
+    # dim of ouput feature map
+    hidden: 256
+    
+  # the weight not contain the fc layer 
+  # weight_pretrained:  /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
+
+  # load all weight
+  # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_hw/VIETOCR/14/best.pt'
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.534.pth'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.488_0.172.pth'
+ 
+  
+
+
+dataset:
+  'train':
+    name: 'PLATEOCR'
+    phase: train
+    # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data/ted2_doiten_split_manual_splited/train'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/train'
+    masked_language_model: True
+    image_height: 500
+    image_min_width: 120
+    image_max_width: 10000
+    vocab: "1234567890."
+    loader_config: 
+      batch_size: 15
+      shuffle: true
+      # num_workers: 1
+      drop_last: true
+      # pin_memory: true
+  'val':
+    name: 'PLATEOCR'
+    phase: val
+    # root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/val'
+    root_dir: '/work/21013187/phuoc/Image_Captionning_Transformer/data2/testset_processced/0418'
+    masked_language_model: False
+    image_height: 500
+    image_min_width: 120
+    image_max_width: 10000
+    vocab: "1234567890."
+    loader_config: 
+      batch_size: 35
+      shuffle: true
+      
+      drop_last: true
+
+optim:
+  lr: 0.00006
+  
+train: 
+  print_frequency: 10
+  epochs: 100
+  # save_folder: 'results_hw'
+  save_folder: 'results_hw'
+
+evaluate:
+  frequency: 100
+  metrics:
+    - accuracy_classification

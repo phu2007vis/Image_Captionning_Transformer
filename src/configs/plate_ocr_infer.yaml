@@ -1,6 +1,7 @@
 
 device: 'cuda:0'
-vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
+# vocab: "123456789ABCDEFGHKLMNPSTUVXYZ0R"
+vocab:
 image_size: 400
 
 model:
@@ -43,8 +44,9 @@ model:
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results/VIETOCR/10/best.pt'
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/70/best.pt'
   # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/93/best.pt'
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/83/best.pt'
+  # pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/83/best.pt'
+  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.488_0.172.pth'
 
 optim:
-  lr: 0.0001
+  lr: 0.00006
 

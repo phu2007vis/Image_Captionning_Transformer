@@ -11,6 +11,10 @@ from torch.optim import AdamW
 from torch.nn.functional import softmax,log_softmax
 import numpy as np
 from utils.beam import Beam
+import torch
+from copy import deepcopy
+from typing import Dict, Any
+
 
 class VIETOCR(nn.Module):
 	def __init__(
@@ -203,7 +207,7 @@ class VIETOCR(nn.Module):
 		self.optimizer = AdamW(filter(lambda p: p.requires_grad, self.parameters()),**optim_config)
   
 	def setup_loss_fn(self):
-		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.25)
+		self.loss_fn = nn.CrossEntropyLoss(ignore_index=0,label_smoothing=0.22)
 		# self.loss_fn = LabelSmoothingLoss(
 		# 			self.model_config['transformers']['vocab_size'], padding_idx=0, smoothing=0.15
 		# 		)
@@ -266,34 +270,95 @@ class VIETOCR(nn.Module):
 		
 		# self.transformer.load_state_dict(transformer_weights,strict=False)
 	def load_transformer_weight(self):
+		
+		# just load transformer_weights
 		try:
 			weight_file = self.model_config['transformer_pretrained']
 			state_dict = torch.load(weight_file, map_location='cpu')['model']
 		except:
 			print("Can not fine file pretraieed transformer weights skipping!")
-			return
-      
 		
-		
-		current_model_state = self.transformer.state_dict()
-		updated_state_dict = {}
-		
-		for key in state_dict.keys():
-			if key.startswith('cnn'):
-				# print(f"Skipping CNN key: {key}")
-				continue
+		try:
+			# Validate weight file exists
+			weight_file = self.model_config.get('weight_pretrained')
+			if not weight_file:
+				print("Weight file path not specified in model_config! skipping")
+				return
+
+			# Load checkpoint
+			print(f"Loading pretrained weights from {weight_file}")
+			checkpoint = torch.load(weight_file, map_location='cpu')
 			
-			# Normalize key by ensuring 'transformer.' prefix
-			new_key = 'transformer.' + key.replace('transformer.', '')
-			new_key_fc = key.replace('transformer.', '')
-   
-			if new_key in current_model_state.keys():
-				updated_state_dict[new_key] = deepcopy(state_dict[key])
-			elif new_key_fc in current_model_state.keys():
-					updated_state_dict[new_key_fc] = deepcopy(state_dict[key])
+			# Extract state_dict from checkpoint
+			state_dict = checkpoint.get('model')
+			if state_dict is None:
+				raise KeyError("Checkpoint doesn't contain 'model' key")
+
+			# Get current model's state_dict
+			model_dict = self.state_dict()
+			
+			# Prepare new weights dictionary
+			pretrained_dict: Dict[str, Any] = {}
+			mismatch_keys = []
+
+			# Compare and match weights
+			for key, value in state_dict.items():
+				if key in model_dict:
+					if value.shape != model_dict[key].shape:
+						mismatch_keys.append((key, value.shape, model_dict[key].shape))
+					else:
+						pretrained_dict[key] = deepcopy(value)
+				else:
+					print(f"Key {key} from checkpoint not found in model")
+
+			# Print mismatch information
+			if mismatch_keys:
+				print("Found mismatched layers:")
+				for key, old_shape, new_shape in mismatch_keys:
+					print(f"{key}: checkpoint {old_shape} -> model {new_shape}")
 			else:
-				print(f"Warning: Key {new_key} or {new_key_fc} not found in transformer state_dict")
+				print("No layer mismatches detected")
+
+			# Load matched weights
+			unmatched = self.load_state_dict(pretrained_dict, strict=False)
+			if unmatched.missing_keys:
+				print(f"Missing keys in model: {unmatched.missing_keys}")
+			if unmatched.unexpected_keys:
+				print(f"Unexpected keys from checkpoint: {unmatched.unexpected_keys}")
+
+			print("Pretrained weights loaded successfully")
+
+		except FileNotFoundError as e:
+			print(f"Error: Weight file not found: {e}")
+			raise
+		except Exception as e:
+			print(f"Error loading weights: {e}")
+			raise
+
+
+
+    
 		
-		# Apply the updated weights to the transformer
-		self.transformer.load_state_dict(updated_state_dict, strict=False)
-		print("Transformer weights loaded successfully.")
+		
+		# current_model_state = self.transformer.state_dict()
+		# updated_state_dict = {}
+		
+		# for key in state_dict.keys():
+		# 	if key.startswith('cnn'):
+		# 		# print(f"Skipping CNN key: {key}")
+		# 		continue
+			
+		# 	# Normalize key by ensuring 'transformer.' prefix
+		# 	new_key = 'transformer.' + key.replace('transformer.', '')
+		# 	new_key_fc = key.replace('transformer.', '')
+   
+		# 	if new_key in current_model_state.keys():
+		# 		updated_state_dict[new_key] = deepcopy(state_dict[key])
+		# 	elif new_key_fc in current_model_state.keys():
+		# 			updated_state_dict[new_key_fc] = deepcopy(state_dict[key])
+		# 	else:
+		# 		print(f"Warning: Key {new_key} or {new_key_fc} not found in transformer state_dict")
+		
+		# # Apply the updated weights to the transformer
+		# self.transformer.load_state_dict(updated_state_dict, strict=False)
+		# print("Transformer weights loaded successfully.")

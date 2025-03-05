@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=Image_captioning
-#SBATCH --partition=dgx-small
+#SBATCH --partition=small
 #SBATCH --time=23:00:00
 #SBATCH --account=ddt_acc23
 
@@ -31,7 +31,7 @@ python /work/21013187/phuoc/Image_Captionning_Transformer/src/utils/generate_txt
 python /work/21013187/phuoc/Image_Captionning_Transformer/src/utils/generate_csv_label.py --root_folder=/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/val
 
 
-python /work/21013187/phuoc/TextRecognitionDataGenerator/trdg_phuoc/generators/from_strings.py --output_dir=/work/21013187/phuoc/Image_Captionning_Transformer/data2/out --number_each=2500 
+python /work/21013187/phuoc/TextRecognitionDataGenerator/trdg_phuoc/generators/from_strings.py --output_dir=/work/21013187/phuoc/Image_Captionning_Transformer/data2/out --number_each=2500
 # Xóa thư mục images nếu tồn tại
 if [ -d "/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/train/images" ]; then
     rm -r "/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/train/images"

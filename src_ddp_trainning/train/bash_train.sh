@@ -11,4 +11,4 @@ cd /work/21013187/phuoc/Image_Captionning_Transformer
 module load python
 module load cuda
 nvidia-smi
-python /work/21013187/phuoc/Image_Captionning_Transformer/src_ddp_trainning/train/acceslator.py
+python /work/21013187/phuoc/Image_Captionning_Transformer/src_ddp_trainning/train/acceslator2.py

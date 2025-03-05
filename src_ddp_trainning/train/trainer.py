@@ -5,7 +5,7 @@ import tqdm
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
-from dataset import get_dataloader
+from dataset_folder import get_dataloader
 from models import get_model
 from tqdm import tqdm
 import metrics

@@ -174,7 +174,7 @@ class Infer(object):
 
 if __name__ == '__main__':
 	# config_file = r"/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr_infer.yaml"
-	config_file = r"/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr_hw_infer.yaml"
+	config_file = r"/work/21013187/phuoc/Image_Captionning_Transformer/src_ddp_trainning/configs/plate_ocr_hw_infer.yaml"
 	# config_file = "/work/21013187/phuoc/Image_Captionning_Transformer/src/configs/plate_ocr_inception_net_infer.yaml"
  
 	from utils import load_config
@@ -191,15 +191,15 @@ if __name__ == '__main__':
 	# 								  label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/test_dataset/labels_2.csv",
 	#        										is_plate= False)
  
-	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/val/images",
-	                                  save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/sythetic_val",
-	                                   label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/val/labels.csv",
-	                                   is_plate=True)
-	
-	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data2/testset_processced/0418/images",
-	# 										save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/testset_hw",
-	#                                    label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data2/testset_processced/0418/labels.csv",
+	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/val/images",
+	#                                   save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/sythetic_val",
+	#                                    label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data2/systhetic_data_v1/val/labels.csv",
 	#                                    is_plate=True)
+	
+	infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data2/testset_processced/0418/images",
+											save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/testset_hw",
+	                                   label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data2/testset_processced/0418/labels.csv",
+	                                   is_plate=True)
 	# infer.evaluate_folder_with_label_map("/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square/images",
 	# 										save_folder= "/work/21013187/phuoc/Image_Captionning_Transformer/results/valid_bien_xa_number",
 	#                                    label_path="/work/21013187/phuoc/Image_Captionning_Transformer/data/bien_xa_val_ver1_just_number_square/labels.csv",

@@ -111,8 +111,9 @@ def train_ddp_accelerate():
     model = load_weights(model, pretrained_path, accelerator)
 
     if mode == 'train':
-        loss_fn = nn.CrossEntropyLoss(label_smoothing=0.22, ignore_index=0)
-        optimizer = optim.AdamW(model.parameters(), lr=7e-5)
+        loss_fn = nn.CrossEntropyLoss(label_smoothing=0.25, ignore_index=0)
+        optim_config = config['optim']
+        optimizer = optim.AdamW(model.parameters(),**optim_config)
 
         train_loader, test_loader = setup_dataloader(config=config)
         train_loader, test_loader, model, optimizer = accelerator.prepare(

@@ -1,7 +1,7 @@
 
-num_mini_batches: 3
+num_mini_batches: 7
 verbose: True
-mode: 'visualize'
+mode: 'train'
 
 model:
   model_name: 'VIETOCR'
@@ -46,8 +46,7 @@ model:
 
   # load all weight
   # pretrained: /work/21013187/phuoc/Image_Captionning_Transformer/results_test_ocr/VIETOCR/86/best.pt
-  pretrained: '/work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer/0_0.488_0.172.pth'
- 
+  pretrained:  /work/21013187/phuoc/Image_Captionning_Transformer/basic-trainer2/best_batch_3050_e19_0.892_0.733.pth
   
 
 
@@ -86,7 +85,7 @@ dataset:
       drop_last: True
 
 optim:
-  lr: 0.0001
+  lr: 0.00008
   
 train: 
   print_frequency: 10
